@@ -559,7 +559,7 @@ function getDestinationForUpgrader(creep) {
             return destination;
         }
         //build structures
-        destination = closest(getConstructionSites(creep));
+        destination = closest(creep.pos, getConstructionSites(creep));
         if (destination) {
             if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
             return destination;
@@ -581,7 +581,6 @@ function getConstructionSites(creep) {
             room.find(FIND_MY_CONSTRUCTION_SITES, {filter: (target) => { return !isBlocked(creep,target); }})
         );
     }
-    msg(creep,'construction sites: '+sites);
     return sites;
 }
 
