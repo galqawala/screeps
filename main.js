@@ -287,7 +287,6 @@ function memorizeCreepState(creep) {
 }
 
 function setDestination(creep, destination) {
-    if (creep.name=='u') msg(creep,'set destination: '+destination);
     if (destination && (creep.memory.destination || creep) != (destination.id || destination)) {
         creep.memory.destination = (destination.id || destination);
         creep.memory.destinationSetTime = Game.time;
@@ -560,7 +559,7 @@ function getDestinationForUpgrader(creep) {
             return destination;
         }
         //build structures
-        destination = getConstructionSites(creep);
+        destination = closest(getConstructionSites(creep));
         if (destination) {
             if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
             return destination;
