@@ -4,6 +4,7 @@
 var minTransfer = 8;
 
 module.exports.loop = function () {
+    console.log('ALIVE');
     for(const i in Game.creeps) handleCreep(Game.creeps[i]);
     for(const i in Game.spawns) handleSpawn(Game.spawns[i]);
     for(const i in Game.rooms)  handleRoom (Game.rooms [i]);
