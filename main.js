@@ -1,5 +1,3 @@
-//ToDo: Build in other rooms
-
 var minTransfer = 8;
 
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
@@ -561,8 +559,7 @@ function getDestinationForUpgrader(creep) {
             return destination;
         }
         //build structures
-        destination = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, 
-            {filter: (target) => { return !isBlocked(creep,target); }});
+        destination = getConstructionSites(creep);
         if (destination) {
             if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
             return destination;
@@ -574,6 +571,17 @@ function getDestinationForUpgrader(creep) {
             return creep.room.controller;
         }
     }
+}
+
+function getConstructionSites(creep) {
+    var sites = [];
+    for(const i in Game.rooms) {
+        var room = Game.rooms[i];
+        sites = sites.concat(
+            room.find(FIND_MY_CONSTRUCTION_SITES, {filter: (target) => { return !isBlocked(creep,target); }})
+        );
+    }
+    return sites;
 }
 
 function isUnderRepair(structure) {
