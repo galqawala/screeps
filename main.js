@@ -581,6 +581,7 @@ function getConstructionSites(creep) {
             room.find(FIND_MY_CONSTRUCTION_SITES, {filter: (target) => { return !isBlocked(creep,target); }})
         );
     }
+    msg(creep,'construction sites: '+sites);
     return sites;
 }
 
