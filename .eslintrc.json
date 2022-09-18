@@ -1,0 +1,38 @@
+{
+    "env": {
+        "screeps/screeps": true,
+        "commonjs": true,
+        "browser": false,
+        "node": false
+    },
+    "extends": "eslint:recommended",
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "max-lines-per-function": ["error", 40],
+        "indent": [
+            "error",
+            4,
+            { "SwitchCase": 1 }
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single",
+            { "avoidEscape": true }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    },
+    "plugins": [
+        "screeps"
+    ]
+}
