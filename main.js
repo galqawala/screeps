@@ -344,7 +344,7 @@ function action(creep, destination) {
             ||  destination instanceof StructureContainer
     ) {
         actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
-        resetDestination(creep); //consider doing something else after succesfull withdraw
+        if (actionOutcome==OK) resetDestination(creep); //consider doing something else after succesfull withdraw
     } else if (destination instanceof RoomPosition) {
         var pathColor = hashColor(creep.memory.role);
         actionOutcome = creep.moveTo(destination, {visualizePathStyle: {stroke: pathColor}});
