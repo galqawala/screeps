@@ -287,6 +287,7 @@ function memorizeCreepState(creep) {
 }
 
 function setDestination(creep, destination) {
+    msg(creep,'set destination: '+destination);
     if (destination && (creep.memory.destination || creep) != (destination.id || destination)) {
         creep.memory.destination = (destination.id || destination);
         creep.memory.destinationSetTime = Game.time;
