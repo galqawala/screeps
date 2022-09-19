@@ -1,3 +1,5 @@
+//ToDo: build (containers) in all rooms & let harvesters repair structures in proximity when full
+
 var minTransfer = 8;
 
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
@@ -78,12 +80,12 @@ function handleRoom(room) {
     //numbers
     var constructionSiteCount = room.find(FIND_MY_CONSTRUCTION_SITES).length;
     if (room.memory.constructionSiteCount != constructionSiteCount) {
-        msg(room, 'Construction sites: '+constructionSiteCount, true);
+        msg(room, 'Construction sites: '+room.memory.constructionSiteCount+' ➤ '+constructionSiteCount, true);
         room.memory.constructionSiteCount = constructionSiteCount;
     }
     var structureCount = room.find(FIND_STRUCTURES).length;
     if (room.memory.structureCount != structureCount) {
-        msg(room, 'Structures: '+structureCount, true);
+        msg(room, 'Structures: '+room.memory.structureCount+' ➤ '+structureCount, true);
         room.memory.structureCount = structureCount;
     }
 }
