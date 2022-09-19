@@ -1,4 +1,4 @@
-//ToDo: build (containers) in all rooms & let harvesters repair structures in proximity when full
+//ToDo: build (containers) in all rooms & let harvesters repair&build structures in immediate proximity when full
 
 var minTransfer = 8;
 
