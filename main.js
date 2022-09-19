@@ -1073,10 +1073,11 @@ function nameForCreep(role) {
 }
 
 function construct(room,structureType) {
-    if (needStructure(room,structureType)) {
+    //build in controlled rooms (containers in occasionally visited rooms decay faster than we can repair them)
+    if (room.controller && room.controller.my && needStructure(room,structureType)) {
         var pos = getPosForConstruction(room,structureType);
         if (!pos) return;
-        msg(room,'Creating a construction site for '+structureType+' at '+pos);
+        msg(room,'Creating a construction site for '+structureType+' at '+pos,true);
         pos.lookFor(LOOK_STRUCTURES).forEach(structure => {
             if (structure instanceof StructureExtension) {
                 msg(structure,'destroying to make space for: '+structureType);
