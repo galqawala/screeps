@@ -75,10 +75,16 @@ function handleRoom(room) {
     if (!(room.memory.upgraderSpots )) updateUpgraderSpots (room);
     if (!(room.memory.harvesterSpots)) updateHarvesterSpots(room);
 
+    //numbers
     var constructionSiteCount = room.find(FIND_MY_CONSTRUCTION_SITES).length;
     if (room.memory.constructionSiteCount != constructionSiteCount) {
         msg(room, 'Construction sites: '+constructionSiteCount, true);
         room.memory.constructionSiteCount = constructionSiteCount;
+    }
+    var structureCount = room.find(FIND_STRUCTURES).length;
+    if (room.memory.structureCount != structureCount) {
+        msg(room, 'Structures: '+structureCount, true);
+        room.memory.structureCount = structureCount;
     }
 }
 
