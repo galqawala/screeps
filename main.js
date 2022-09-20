@@ -265,7 +265,7 @@ function handleCreep(creep) {
         setDestination(creep, destination);
     }
 
-    let actionOutcome = action(creep, destination);
+    let actionOutcome = action(creep, destination) || actionByDestinationType(creep, destination);
 
     //time we got to the destination proximity
     if (destination && !(creep.memory.timeArrivedToDestinationProximity) && creep.pos.getRangeTo(destination) <= 3) {
@@ -329,7 +329,20 @@ function action(creep, destination) {
         actionOutcome = creep.repair(destination);
     } else if (creep.memory.action === 'withdraw') {
         actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
-    } else if (destination instanceof Source) {
+    } else if (creep.memory.action === 'transfer') {
+        actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
+    } else if (destination) {
+        msg(creep, "don't know what to do with destination: " + destination, true);
+    }
+
+    creep.memory.lastActionOutcome = actionOutcome;
+    return actionOutcome;
+}
+
+function actionByDestinationType(creep, destination) {
+    msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
+    let actionOutcome;
+    if (destination instanceof Source) {
         actionOutcome = creep.harvest(destination);
     } else if (destination instanceof StructureController) {
         actionOutcome = creep.upgradeController(destination);
