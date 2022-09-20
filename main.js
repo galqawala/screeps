@@ -265,7 +265,7 @@ function handleCreep(creep) {
         setDestination(creep, destination);
     }
 
-    let actionOutcome = action(creep, destination) || actionByDestinationType(creep, destination);
+    let actionOutcome = action(creep, destination);
 
     //time we got to the destination proximity
     if (destination && !(creep.memory.timeArrivedToDestinationProximity) && creep.pos.getRangeTo(destination) <= 3) {
@@ -332,7 +332,7 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'transfer') {
         actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
     } else if (destination) {
-        msg(creep, "don't know what to do with destination: " + destination, true);
+        actionOutcome = actionByDestinationType(creep, destination);
     }
 
     creep.memory.lastActionOutcome = actionOutcome;
