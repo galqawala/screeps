@@ -311,6 +311,7 @@ function getNewDestination(creep) {
         let downstream = isEmpty(creep) ? [] : getEnergyDestinations(); //energy destinations
         let destination = closest(creep.pos, upstream.concat(downstream));
         if (destination && destination.memory) destination.memory.awaitingDeliveryFrom = creep.name;
+        if (isDownstreamLink(destination)) creep.memory.action = 'withdraw';
         return destination;
     } else if (role === 'spawner') {
         let spawnerUpstream = isFull(creep) ? [] :
