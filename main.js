@@ -378,6 +378,7 @@ function transfer(creep, destination) {
 }
 
 function postAction(creep, destination, actionOutcome) {
+    msg(creep, 'destination: ' + destination);
     if (actionOutcome === OK) {
         creep.memory.lastOkActionTime = Game.time;
     } else {
