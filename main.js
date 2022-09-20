@@ -323,7 +323,7 @@ function getNewDestination(creep) {
 }
 
 function action(creep, destination) {
-    msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
+    if (creep.name === 'wK') msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
     let actionOutcome;
     if (creep.memory.action === 'repair') {
         actionOutcome = creep.repair(destination);
@@ -340,7 +340,7 @@ function action(creep, destination) {
 }
 
 function actionByDestinationType(creep, destination) {
-    msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
+    if (creep.name === 'wK') msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
     let actionOutcome;
     if (destination instanceof Source) {
         actionOutcome = creep.harvest(destination);
