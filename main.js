@@ -508,21 +508,6 @@ function getEnergyDestinations() {
     return targets;
 }
 
-function storagesWithPlentyEnergy() {
-    let storages = [];
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        storages = storages.concat(room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE && getEnergy(structure) >= 150000;
-            }
-        }));
-    }
-
-    return storages;
-}
-
 function isDownstreamLink(link) {
     if (link instanceof StructureLink) {
         return hasStructureInRange(link.pos, STRUCTURE_CONTROLLER, 6, false);
