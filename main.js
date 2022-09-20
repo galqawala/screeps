@@ -302,7 +302,7 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         let task = getTaskForWorker(creep);
-        msg(creep, 'task: ' + task);
+        msg(creep, 'task: destination: ' + task.destination + ' action: ' + task.action);
         creep.memory.action = task.action;
         return task.destination;
     } else if (role === 'carrier') {
