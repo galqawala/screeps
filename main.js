@@ -580,6 +580,7 @@ function getHarvestTaskInRange(pos) {
 }
 
 function getTaskForWorker(creep) {
+    msg(creep, 'getTaskForWorker()');
     if (isFull(creep)) { //spend energy without moving
         let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
         if (task) return task;
