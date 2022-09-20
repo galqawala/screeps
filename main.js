@@ -1,22 +1,5 @@
-/*ToDo: 
-    build (containers) in all rooms
-    remove role 'harvester'
-    rename role 'upgrader' -> 'worker'
-    add 'sources' to the 'energy sources' a 'worker' can use
-    worker priorities:
-        if (full) repair in range of 3
-        if (full) build in range of 3
-        if (full) transfer in range of 1 (#1: link, #2: container)
-        harvest in range of 1
-        all the things upgraders used to do
-        harvest anywhere
-        exit to another room
-*/
-
-let minTransfer = 8;
-
 //  https://stackoverflow.com/questions/14733374/how-to-generate-an-md5-file-hash-in-javascript-node-js
-// eslint-disable-next-line semi, no-extra-semi, quotes, no-unused-vars, no-undef, no-var
+// eslint-disable-next-line semi, no-extra-semi, quotes, no-unused-vars, no-undef, no-var, max-len
 var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCase() }; function M(d) { for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++)_ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _); return f } function X(d) { for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++)_[m] = 0; for (m = 0; m < 8 * d.length; m += 8)_[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32; return _ } function V(d) { for (var _ = "", m = 0; m < 32 * d.length; m += 8)_ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255); return _ } function Y(d, _) { d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _; for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) { var h = m, t = f, g = r, e = i; f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e) } return Array(m, f, r, i) } function md5_cmn(d, _, m, f, r, i) { return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m) } function md5_ff(d, _, m, f, r, i, n) { return md5_cmn(_ & m | ~_ & f, d, _, r, i, n) } function md5_gg(d, _, m, f, r, i, n) { return md5_cmn(_ & f | m & ~f, d, _, r, i, n) } function md5_hh(d, _, m, f, r, i, n) { return md5_cmn(_ ^ m ^ f, d, _, r, i, n) } function md5_ii(d, _, m, f, r, i, n) { return md5_cmn(m ^ (_ | ~f), d, _, r, i, n) } function safe_add(d, _) { var m = (65535 & d) + (65535 & _); return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m } function bit_rol(d, _) { return d << _ | d >>> 32 - _ }
 
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
@@ -91,8 +74,8 @@ function handleRoom(room) {
     //handle links
     handleLinks(room);
 
-    if (!(room.memory.upgraderSpots)) updateUpgraderSpots(room);
-    if (!(room.memory.harvesterSpots)) updateHarvesterSpots(room);
+    if (!(room.memory.upgradeSpots)) updateUpgradeSpots(room);
+    if (!(room.memory.harvestSpots)) updateHarvestSpots(room);
 
     //numbers
     let constructionSiteCount = room.find(FIND_MY_CONSTRUCTION_SITES).length;
@@ -133,9 +116,9 @@ function handleHostilesInRoom(room) {
     }
 }
 
-function updateUpgraderSpots(room) {
+function updateUpgradeSpots(room) {
     if (!(room.controller)) return;
-    msg(room, 'Updating upgrader spots');
+    msg(room, 'Updating upgrade spots');
     let targetPos = room.controller.pos;
     let range = 3;
     const terrain = new Room.Terrain(room.name);
@@ -150,11 +133,11 @@ function updateUpgraderSpots(room) {
             spots.push(pos);
         }
     }
-    room.memory.upgraderSpots = spots;
+    room.memory.upgradeSpots = spots;
 }
 
-function updateHarvesterSpots(room) {
-    msg(room, 'Updating harvester spots');
+function updateHarvestSpots(room) {
+    msg(room, 'Updating harvest spots');
     let range = 1;
     const terrain = new Room.Terrain(room.name);
     let spots = [];
@@ -170,7 +153,7 @@ function updateHarvesterSpots(room) {
                 if (!containsPosition(spots, pos)) spots.push(pos);
             }
         }
-        room.memory.harvesterSpots = spots;
+        room.memory.harvestSpots = spots;
     });
 }
 
@@ -179,12 +162,12 @@ function containsPosition(list, pos) {
 }
 
 function handleLinks(room) {
-    //move energy towards upgraderLastTask
-    let upgraderLastTask = Game.getObjectById(room.memory.upgraderLastTask);
-    if (!upgraderLastTask) return;
+    //move energy towards lastEnergyConsumingTask
+    let lastEnergyConsumingTask = Game.getObjectById(room.memory.lastEnergyConsumingTask);
+    if (!lastEnergyConsumingTask) return;
     let links = room.find(FIND_MY_STRUCTURES, { filter: (link) => { return link.structureType === STRUCTURE_LINK; } })
         .sort(function (x, y) { //sort: furthest/upstream -> closest/downstream
-            return y.pos.getRangeTo(upgraderLastTask) - x.pos.getRangeTo(upgraderLastTask);
+            return y.pos.getRangeTo(lastEnergyConsumingTask) - x.pos.getRangeTo(lastEnergyConsumingTask);
         });
     let upstreamIndex = 0;
     let downstreamIndex = links.length - 1;
@@ -253,10 +236,11 @@ function getDestinationFromMemory(creep) {
             destination = resetDestination(creep);
         }
 
-        if (creep.memory.repair && !needsRepair(destination)) destination = resetDestination(creep);
+        if (creep.memory.action === 'repair' && !needsRepair(destination)) destination = resetDestination(creep);
 
         if (destination && creep.pos.roomName !== creep.memory.roomName && creep.pos.roomName === destination.pos.roomName) {
-            //we've just arrived to the destination room, let's reconsider the destination, now that we can calculate the distances within the room
+            /*  we've just arrived to the destination room, let's reconsider the destination,
+                now that we can calculate the distances within the room */
             destination = resetDestination(creep);
         }
     }
@@ -265,6 +249,7 @@ function getDestinationFromMemory(creep) {
 }
 
 function handleCreep(creep) {
+    if (creep.memory.role === 'upgrader' || creep.memory.role === 'harvester') creep.memory.role === 'worker';
     if (creep.spawning) return;
 
     let role = creep.memory.role;
@@ -272,13 +257,6 @@ function handleCreep(creep) {
 
     if (creep.memory.awaitingDeliveryFrom && !(Game.creeps[creep.memory.awaitingDeliveryFrom])) {
         creep.memory.awaitingDeliveryFrom = null; //no longer await delivery from a dead creep
-    } else if (role === 'carrier' && destination instanceof Creep && isEmpty(creep)) {
-        destination = resetDestination(creep); //cancel delivery, when empty
-    }
-
-    let link = nearbyLinkForTransfer(creep.pos);
-    if (role === 'harvester' && isFull(creep) && !isEmpty(creep) && destination instanceof Source && link) {
-        destination = link;
     }
 
     //create a new plan if situation requires
@@ -295,7 +273,7 @@ function handleCreep(creep) {
     }
     postAction(creep, destination, actionOutcome);
 
-    if (role === 'upgrader' && !useLink(creep)) orderEnergy(creep, destination);
+    if (role === 'worker' && !useLink(creep)) orderEnergy(creep, destination);
     memorizeCreepState(creep);
 }
 
@@ -322,21 +300,10 @@ function getNewDestination(creep) {
     let role = creep.memory.role;
     let myMinTransfer = minTransferAmount(creep);
 
-    if (role === 'harvester') {
-        let link = nearbyLinkForTransfer(creep.pos);
-        if (isFull(creep) && !isEmpty(creep) && link) {
-            return link;
-        } else {
-            let workPlaces = creep.room.find(FIND_SOURCES, { filter: (source) => { return source.energy > 0 && !isBlocked(creep, source); } });
-            let destination;
-            if (canHarvestInRoom(creep.room) && workPlaces.length) {
-                destination = creep.pos.findClosestByPath(workPlaces);
-            }
-            if (!destination) destination = getExit(creep.pos);
-            return destination;
-        }
-    } else if (role === 'upgrader') {
-        return getDestinationForUpgrader(creep);
+    if (role === 'worker') {
+        let task = getTaskForWorker(creep);
+        creep.memory.action = task.action;
+        return task.destination;
     } else if (role === 'carrier') {
         let upstream = isFull(creep) ? [] : getEnergySources(myMinTransfer); //energy sources
         let downstream = isEmpty(creep) ? [] : getEnergyDestinations(); //energy destinations
@@ -354,8 +321,10 @@ function getNewDestination(creep) {
 
 function action(creep, destination) {
     let actionOutcome;
-    if (creep.memory.repair) {
+    if (creep.memory.action === 'repair') {
         actionOutcome = creep.repair(destination);
+    } else if (creep.memory.action === 'withdraw') {
+        actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
     } else if (destination instanceof Source) {
         actionOutcome = creep.harvest(destination);
     } else if (destination instanceof StructureController) {
@@ -374,11 +343,7 @@ function action(creep, destination) {
         let pathColor = hashColor(creep.memory.role);
         actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     } else if (destination instanceof StructureLink || destination instanceof StructureStorage) {
-        if (creep.memory.role === 'upgrader' || creep.memory.role === 'spawner' || isDownstreamLink(destination)) {
-            actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
-        } else {
-            actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
-        }
+        actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
     } else if (destination instanceof StructureSpawn
         || destination instanceof StructureExtension
         || destination instanceof Creep
@@ -433,7 +398,6 @@ function postAction(creep, destination, actionOutcome) {
             memorizeBlockedObject(creep, destination);
         } else if (actionOutcome === ERR_TIRED) {
             creep.say('😓');
-            if (creep.memory.role === 'harvester' && !isEmpty(creep)) creep.drop(RESOURCE_ENERGY);
         } else if (actionOutcome === ERR_NOT_OWNER) {
             creep.say('👮');
             resetDestination(creep);
@@ -474,15 +438,15 @@ function worthRepair(pos, structure) {
     return true;
 }
 
-function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = false) {
+function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = false, allowSource = false) {
     let sources = [];
 
     for (const i in Game.rooms) {
         let room = Game.rooms[i];
         sources = sources
-            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return resource.energy >= myMinTransfer; } }))
-            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return tomb.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer; } }))
-            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return ruin.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer; } }))
+            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
+            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
+            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
             .concat(room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType === STRUCTURE_CONTAINER
@@ -492,6 +456,9 @@ function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = fa
                     ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
                 }
             }));
+        if (allowSource && canHarvestInRoom(room)) {
+            sources = sources.concat(room.find(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } }));
+        }
     }
 
     return sources;
@@ -540,18 +507,6 @@ function storagesWithPlentyEnergy() {
     return storages;
 }
 
-function storedEnergy() {
-    let energy = 0;
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        energy += room.find(FIND_STRUCTURES, { filter: (structure) => { return structure.structureType === STRUCTURE_STORAGE; } })
-            .reduce((aggregated, item) => aggregated + getEnergy(item), 0 /*initial*/);
-    }
-
-    return energy;
-}
-
 function isDownstreamLink(link) {
     if (link instanceof StructureLink) {
         return hasStructureInRange(link.pos, STRUCTURE_CONTROLLER, 6, false);
@@ -567,40 +522,97 @@ function closest(pos, options) {
     return destination;
 }
 
-function getDestinationForUpgrader(creep) {
-    let destination;
-    //fetch nearby energy
-    if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
-        let energySources = getEnergySources(minTransferAmount(creep), true, true);
-        destination = closest(creep.pos, energySources);
-        return destination;
+function getRepairTaskInRange(pos) {
+    let destination = pos.findClosestByPath(
+        pos.findInRange(FIND_STRUCTURES, 3, {
+            filter: (target) => { return target.my !== false && target.hits < target.hitsMax; }
+        })
+    );
+    if (destination) {
+        return { action: 'repair', destination: destination };
     }
-    if (!isEmpty(creep)) {
+}
+
+function getBuildTaskInRange(pos) {
+    let destination = pos.findClosestByPath(pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3));
+    if (destination) {
+        return { action: 'build', destination: destination };
+    }
+}
+
+function getTransferTaskInRange(pos) {
+    let sources = pos.findInRange(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } });
+    if (sources.length < 1) return; //no need to transfer
+
+    let destination = pos.findClosestByPath( //link
+        pos.findInRange(FIND_STRUCTURES, 1, {
+            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === StructureLink; }
+        })
+    );
+    if (!destination) {
+        destination = pos.findClosestByPath( //carrier
+            pos.findInRange(FIND_CREEPS, 1, {
+                filter: (target) => { return !isFull(target) && target.my !== false && target.memory.role === 'carrier'; }
+            })
+        );
+    }
+    if (!destination) {
+        destination = pos.findClosestByPath( //any structure
+            pos.findInRange(FIND_STRUCTURES, 1, {
+                filter: (target) => { return !isFull(target) && target.my !== false; }
+            })
+        );
+    }
+    if (destination && pos.getRangeTo(destination) <= 1) {
+        return { action: 'transfer', destination: destination };
+    }
+}
+
+function getHarvestTaskInRange(pos) {
+    let destination = pos.findClosestByPath(
+        pos.findInRange(FIND_SOURCES, 1, {
+            filter: (target) => { return getEnergy(target) > 0; }
+        })
+    );
+    if (destination) {
+        return { action: 'harvest', destination: destination };
+    }
+}
+
+function getTaskForWorker(creep) {
+    if (isFull(creep)) { //spend energy without moving
+        let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
+        if (task) return task;
+    } else { //harvest without moving
+        let task = getHarvestTaskInRange(creep.pos);
+        if (task) return task;
+    }
+    if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
+        //fetch nearby energy
+        let destination = closest(creep.pos, getEnergySources(minTransferAmount(creep), true, true, true));
+        if (destination) return { destination: destination };
+        return { destination: getExit(creep.pos) };
+    } else if (!isEmpty(creep)) {
+        let destination;
         //upgrade the room controller if it's about to downgrade
         if (creep.room.controller && creep.room.controller.ticksToDowngrade < 2000) {
-            if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
-            return creep.room.controller;
+            destination = creep.room.controller;
         }
         //repair structures
-        destination = creep.pos.findClosestByPath(FIND_STRUCTURES,
-            { filter: (target) => { return worthRepair(creep.pos, target) && !isUnderRepair(target) && !isBlocked(creep, target); } }
-        );
-        if (destination) {
-            creep.memory.repair = true;
-            if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
-            return destination;
+        if (!destination) {
+            let destination = creep.pos.findClosestByPath(FIND_STRUCTURES,
+                { filter: (target) => { return worthRepair(creep.pos, target) && !isUnderRepair(target) && !isBlocked(creep, target); } }
+            );
+            if (destination) creep.memory.action = 'repair';
         }
         //build structures
-        destination = closest(creep.pos, getConstructionSites(creep));
-        if (destination) {
-            if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
-            return destination;
-        }
+        if (!destination) destination = closest(creep.pos, getConstructionSites(creep));
         //upgrade the room controller
-        if (creep.room.controller) {
-            destination = creep.room.controller;
-            if (destination.id) creep.room.memory.upgraderLastTask = destination.id;
-            return creep.room.controller;
+        if (!destination && creep.room.controller) destination = creep.room.controller;
+        //return the final destination
+        if (destination) {
+            if (destination.id) creep.room.memory.lastEnergyConsumingTask = destination.id;
+            return { destination: destination };
         }
     }
 }
@@ -620,7 +632,7 @@ function isUnderRepair(structure) {
     if (!structure) return false;
     if (!(structure.id)) return false;
     let creepsRepairingIt = _(Game.creeps).filter(function (creep) {
-        return creep.memory.repair && creep.memory.destination === structure.id;
+        return creep.memory.action === 'repair' && creep.memory.destination === structure.id;
     }
     ).value().length;
     if (creepsRepairingIt) return true;
@@ -669,16 +681,6 @@ function isLinkNear(pos) {
     }).length > 0;
 }
 
-function nearbyLinkForTransfer(pos) {
-    let maxRange = 5;
-    let links = pos.findInRange(FIND_MY_STRUCTURES, maxRange, {
-        filter: (link) => {
-            return link.structureType === STRUCTURE_LINK && link.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransfer;
-        }
-    });
-    return pos.findClosestByPath(links);
-}
-
 function getEnergySourceNearby(creep, maxRange = 6) {
     let myMinTransfer = minTransferAmount(creep);
     let destinations = creep.pos.findInRange(FIND_DROPPED_RESOURCES, maxRange)
@@ -692,7 +694,7 @@ function getEnergySourceNearby(creep, maxRange = 6) {
                 return target.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
             }
         }));
-    if (creep.memory.role === 'upgrader') {
+    if (creep.memory.role === 'worker') {
         destinations = destinations.concat(
             creep.pos.findInRange(FIND_MY_STRUCTURES, maxRange, {
                 filter: (structure) => {
@@ -707,7 +709,7 @@ function getEnergySourceNearby(creep, maxRange = 6) {
 function orderEnergy(creep, destination) {
     //order energy from closest available carrier
     if (!(destination instanceof Resource)
-        && creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransfer
+        && creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransferAmount(creep)
         && !(creep.memory.awaitingDeliveryFrom)
         && (creep.memory.timeOfLastEnergyReceived || 0) < Game.time
         && !getEnergySourceNearby(creep)
@@ -836,7 +838,7 @@ function updateConstructionSiteScore(room, x, y, value) {
 }
 
 function getPosForStorage(room) {
-    //next to the link, controller and upgrader spots
+    //next to the link, controller and upgrade spots
     if (!(room)) return null;
     if (!(room.controller)) return null;
 
@@ -856,7 +858,7 @@ function getPosForStorage(room) {
             if (x === targetPos.x && y === targetPos.y) continue;
             if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
             let pos = new RoomPosition(x, y, room.name);
-            let score = workSpotsAround(pos, 'upgrader');
+            let score = workSpotsAround(pos, 'upgrade');
             if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
             if (bestScore < score) {
                 bestScore = score;
@@ -889,8 +891,8 @@ function getPrimaryPosForLink(room) {
                     if (x === targetPos.x && y === targetPos.y) continue;
                     if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
                     let pos = new RoomPosition(x, y, room.name);
-                    let role = (target instanceof StructureController ? 'upgrader' : 'harvester');
-                    let score = workSpotsAround(pos, role);
+                    let task = (target instanceof StructureController ? 'upgrade' : 'harvest');
+                    let score = workSpotsAround(pos, task);
                     if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
                     if (bestScore < score) {
                         bestScore = score;
@@ -904,8 +906,10 @@ function getPrimaryPosForLink(room) {
     }
 }
 
-function workSpotsAround(pos, role) {
-    let spots = (role === 'upgrader') ? Memory.rooms[pos.roomName].upgraderSpots : Memory.rooms[pos.roomName].harvesterSpots;
+function workSpotsAround(pos, task) {
+    let spots = (task === 'upgrade')
+        ? Memory.rooms[pos.roomName].upgradeSpots
+        : Memory.rooms[pos.roomName].harvestSpots;
     let spotsAround = 0;
     spots.forEach(spot => {
         if (pos.getRangeTo(spot.x, spot.y) === 1) spotsAround++;
@@ -928,7 +932,7 @@ function hasStructureInRange(pos, structureType, range, includeConstructionSites
 }
 
 function getPosForContainer(room) {
-    let spots = shuffle(room.memory.harvesterSpots);
+    let spots = shuffle(room.memory.harvestSpots);
     for (let i = 0; i < spots.length; i++) {
         let spot = spots[i];
         let pos = new RoomPosition(spot.x, spot.y, spot.roomName);
@@ -1009,7 +1013,7 @@ function isPosSuitableForConstruction(pos) {
 }
 
 function isWorkerSpot(pos) {
-    let spots = Memory.rooms[pos.roomName].upgraderSpots.concat(Memory.rooms[pos.roomName].harvesterSpots);
+    let spots = Memory.rooms[pos.roomName].upgradeSpots.concat(Memory.rooms[pos.roomName].harvestSpots);
     for (let i = 0; i < spots.length; i++) {
         if (pos.x === spots[i].x && pos.y === spots[i].y) return true;
     }
@@ -1051,8 +1055,7 @@ function handleSpawn(spawn) {
 
         if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
         else if (carriersNeeded()) roleToSpawn = 'carrier';
-        else if (globalSourceFillRatio() >= 0.70 && storedEnergy() < 250000) roleToSpawn = 'harvester';
-        else roleToSpawn = 'upgrader';
+        else roleToSpawn = 'worker';
 
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
             aggregated + (item.memory.role === roleToSpawn ? bodyCost(item.body.map(part => part.type)) : 0), 0 /*initial*/) || 0;
@@ -1078,8 +1081,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable) {
     Each MOVE body part decreases fatigue points by 2 per tick.
     The creep cannot move when its fatigue is greater than zero.    */
     let ratios;
-    if (roleToSpawn === 'harvester') ratios = { move: 4, work: 3, carry: 1 };
-    else if (roleToSpawn === 'upgrader') ratios = { move: 2, work: 3, carry: 1 };
+    if (roleToSpawn === 'worker') ratios = { move: 2, work: 3, carry: 1 };
     else if (roleToSpawn === 'carrier' || roleToSpawn === 'spawner') ratios = { move: 1, carry: 1 };
 
     let body = bodyByRatio(ratios, energyAvailable);
@@ -1087,7 +1089,8 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable) {
     let name = nameForCreep(roleToSpawn);
 
     if (spawn.spawnCreep(body, name, { memory: { role: roleToSpawn }, energyStructures: energyStructures }) === OK) {
-        msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: ' + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
+        msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
+            + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
 }
 
@@ -1120,8 +1123,7 @@ function nameForCreep(role) {
 }
 
 function construct(room, structureType) {
-    //build in controlled rooms (containers in occasionally visited rooms decay faster than we can repair them)
-    if (room.controller && room.controller.my && needStructure(room, structureType)) {
+    if (needStructure(room, structureType)) {
         let pos = getPosForConstruction(room, structureType);
         if (!pos) return;
         msg(room, 'Creating a construction site for ' + structureType + ' at ' + pos, true);
@@ -1184,7 +1186,7 @@ function resetDestination(creep) {
     creep.memory.destination = null;
     creep.memory.destinationSetTime = Game.time;
     creep.memory.timeArrivedToDestinationProximity = null;
-    creep.memory.repair = false;
+    creep.memory.action = null;
     if (destination && destination.memory && destination.memory.awaitingDeliveryFrom) {
         destination.memory.awaitingDeliveryFrom = null;
     }
