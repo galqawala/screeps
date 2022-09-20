@@ -333,6 +333,7 @@ function action(creep, destination) {
         actionOutcome = creep.upgradeController(destination);
     } else if (destination instanceof ConstructionSite) {
         actionOutcome = creep.build(destination);
+        creep.room.memory.lastEnergyConsumingTask = destination.id;
     } else if (destination instanceof Resource) {
         actionOutcome = creep.pickup(destination);
     } else if (destination instanceof Tombstone
