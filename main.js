@@ -312,7 +312,7 @@ function getNewDestination(creep) {
         return destination;
     } else if (role === 'spawner') {
         let spawnerUpstream = isFull(creep) ? [] :
-            getEnergySources(myMinTransfer).concat(storagesWithPlentyEnergy()); //energy sources
+            getEnergySources(myMinTransfer, true); //energy sources
         let spawnerDownstream = isEmpty(creep) ? [] : getGlobalEnergyStructures(); //energy destinations
         let destination = closest(creep.pos, spawnerUpstream.concat(spawnerDownstream));
         if (destination instanceof StructureStorage || destination instanceof StructureLink) creep.memory.action = 'withdraw';
