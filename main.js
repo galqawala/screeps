@@ -552,6 +552,7 @@ function getTransferTaskInRange(pos) {
             filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === StructureLink; }
         })
     );
+    msg(pos, 'transfer to link: ' + destination);
     if (!destination) {
         destination = pos.findClosestByPath( //carrier
             pos.findInRange(FIND_CREEPS, 1, {
