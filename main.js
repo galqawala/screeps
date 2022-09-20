@@ -8,7 +8,6 @@ module.exports.loop = function () {
     for (const i in Game.creeps) handleCreep(Game.creeps[i]);
     for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
-    if (Game.time % 50 === 0) msg(null, 'source fill ratio: ' + globalSourceFillRatio());
 };
 
 function bodyByRatio(ratios, maxCost) {
@@ -1109,19 +1108,6 @@ function getStore(object) {
     if (object instanceof Store) return object;
     if (object.store instanceof Store) return object.store;
     return null;
-}
-
-function globalSourceFillRatio() {
-    let energy = 0;
-    let energyCapacity = 0;
-
-    for (const i in Game.rooms) {
-        energy += Game.rooms[i].find(FIND_SOURCES).reduce((aggregated, item) => aggregated + item.energy, 0 /*initial*/);
-        energyCapacity += Game.rooms[i].find(FIND_SOURCES)
-            .reduce((aggregated, item) => aggregated + item.energyCapacity, 0 /*initial*/);
-    }
-
-    return energy / energyCapacity;
 }
 
 function handleSpawn(spawn) {
