@@ -1252,7 +1252,6 @@ function resetDestination(creep) {
     creep.memory.lastDestination = creep.memory.destination;
     creep.memory.lastAction = creep.memory.action;
     //reset properties
-    creep.say('❌');
     if (!(creep.memory.destination)) return null;
     let destination = Game.getObjectById(creep.memory.destination);
     creep.memory.destination = null;
