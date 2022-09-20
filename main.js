@@ -323,7 +323,6 @@ function getNewDestination(creep) {
 }
 
 function action(creep, destination) {
-    if (creep.name === 'wK') msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
     let actionOutcome;
     if (creep.memory.action === 'repair') {
         actionOutcome = creep.repair(destination);
@@ -340,7 +339,6 @@ function action(creep, destination) {
 }
 
 function actionByDestinationType(creep, destination) {
-    if (creep.name === 'wK') msg(creep, 'destination: ' + destination + ' action: ' + creep.memory.action);
     let actionOutcome;
     if (destination instanceof Source) {
         actionOutcome = creep.harvest(destination);
@@ -400,7 +398,6 @@ function postAction(creep, destination, actionOutcome) {
         if (actionOutcome === ERR_NOT_IN_RANGE) {
             handleNotInRange(creep, destination);
         } else if (actionOutcome === ERR_FULL) {
-            msg(creep, 'ERR_FULL. destination: ' + destination);
             resetDestination(creep);
             handleCreep(creep);
             return;
