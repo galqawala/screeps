@@ -312,7 +312,8 @@ function getNewDestination(creep) {
         if (destination && destination.memory) destination.memory.awaitingDeliveryFrom = creep.name;
         return destination;
     } else if (role === 'spawner') {
-        let spawnerUpstream = isFull(creep) ? [] : getEnergySources(myMinTransfer).concat(storagesWithPlentyEnergy()); //energy sources
+        let spawnerUpstream = isFull(creep) ? [] :
+            getEnergySources(myMinTransfer).concat(storagesWithPlentyEnergy()); //energy sources
         let spawnerDownstream = isEmpty(creep) ? [] : getGlobalEnergyStructures(); //energy destinations
         let destination = closest(creep.pos, spawnerUpstream.concat(spawnerDownstream));
         if (destination instanceof StructureStorage) creep.memory.action = 'withdraw';
@@ -581,6 +582,67 @@ function getHarvestTaskInRange(pos) {
     }
 }
 
+function getUpgradeTask(room, urgentOnly) {
+    if (!(room.controller)) return;
+    if (urgentOnly && room.controller.ticksToDowngrade > 2000) return;
+    return { action: 'upgradeController', destination: room.controller };
+}
+
+function getEnergySourceTask(myMinTransfer, pos) {
+    let sources = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        sources = sources
+            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
+            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
+            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
+            .concat(room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType === STRUCTURE_CONTAINER
+                        || (structure.structureType === STRUCTURE_STORAGE)
+                        || (structure.structureType === STRUCTURE_LINK)
+                        || isDownstreamLink(structure)
+                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
+                }
+            }));
+        if (canHarvestInRoom(room)) {
+            sources = sources.concat(room.find(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } }));
+        }
+    }
+
+    let destination = closest(pos, sources);
+    if (!destination) return;
+
+    let action = 'withdraw';
+    if (destination instanceof Source) {
+        action = 'harvest';
+    } else if (destination instanceof Resource) {
+        action = 'pickup';
+    }
+
+    return { action: action, destination: destination };
+}
+
+function getRepairTask(creep) {
+    let destinations = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        destinations = destinations
+            .concat(room.find(FIND_STRUCTURES, {
+                filter: (target) => {
+                    return worthRepair(creep.pos, target) && !isUnderRepair(target) && !isBlocked(creep, target);
+                }
+            }));
+    }
+
+    let destination = closest(creep.pos, destinations);
+    if (!destination) return;
+
+    return { action: 'repair', destination: destination };
+}
+
 function getTaskForWorker(creep) {
     msg(creep, 'getTaskForWorker()');
     if (isFull(creep)) { //spend energy without moving
@@ -592,30 +654,25 @@ function getTaskForWorker(creep) {
     }
     if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
         //fetch nearby energy
-        let destination = closest(creep.pos, getEnergySources(minTransferAmount(creep), true, true, true));
-        if (destination) return { destination: destination };
-        return { destination: getExit(creep.pos) };
+        let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
+        if (task) return task;
+        return { action: 'moveTo', destination: getExit(creep.pos) };
     } else if (!isEmpty(creep)) {
-        let destination;
         //upgrade the room controller if it's about to downgrade
-        if (creep.room.controller && creep.room.controller.ticksToDowngrade < 2000) {
-            destination = creep.room.controller;
-        }
+        let task = getUpgradeTask(creep.room, true);
         //repair structures
-        if (!destination) {
-            let destination = creep.pos.findClosestByPath(FIND_STRUCTURES,
-                { filter: (target) => { return worthRepair(creep.pos, target) && !isUnderRepair(target) && !isBlocked(creep, target); } }
-            );
-            if (destination) creep.memory.action = 'repair';
-        }
+        if (!task) task = getRepairTask(creep);
         //build structures
-        if (!destination) destination = closest(creep.pos, getConstructionSites(creep));
+        if (!task) {
+            let destination = closest(creep.pos, getConstructionSites(creep));
+            if (destination) task = { action: 'build', destination: destination };
+        }
         //upgrade the room controller
-        if (!destination && creep.room.controller) destination = creep.room.controller;
+        if (!task) task = getUpgradeTask(creep.room, false);
         //return the final destination
-        if (destination) {
-            if (destination.id) creep.room.memory.lastEnergyConsumingTask = destination.id;
-            return { destination: destination };
+        if (task) {
+            if (task.destination.id) creep.room.memory.lastEnergyConsumingTask = task.destination.id;
+            return task;
         }
     }
 }
@@ -846,7 +903,8 @@ function getPosForStorage(room) {
     if (!(room.controller)) return null;
 
     let link = room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } });
-    if (!link) link = room.controller.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: STRUCTURE_LINK } });
+    if (!link) link = room.controller.pos.findClosestByRange(
+        FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: STRUCTURE_LINK } });
     if (!link) return null;
     if (link.pos.getRangeTo(room.controller.pos) > 6) return null;
 
@@ -1043,7 +1101,8 @@ function globalSourceFillRatio() {
 
     for (const i in Game.rooms) {
         energy += Game.rooms[i].find(FIND_SOURCES).reduce((aggregated, item) => aggregated + item.energy, 0 /*initial*/);
-        energyCapacity += Game.rooms[i].find(FIND_SOURCES).reduce((aggregated, item) => aggregated + item.energyCapacity, 0 /*initial*/);
+        energyCapacity += Game.rooms[i].find(FIND_SOURCES)
+            .reduce((aggregated, item) => aggregated + item.energyCapacity, 0 /*initial*/);
     }
 
     return energy / energyCapacity;
@@ -1149,7 +1208,9 @@ function needStructure(room, structureType) {
 
 function countStructures(room, structureType, includeConstructionSites) {
     let count = room.find(FIND_MY_STRUCTURES, { filter: { structureType: structureType } }).length;
-    if (includeConstructionSites) count += room.find(FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: structureType } }).length;
+    if (includeConstructionSites) {
+        count += room.find(FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: structureType } }).length;
+    }
     return count;
 }
 
