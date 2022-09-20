@@ -567,7 +567,7 @@ function getTransferTaskInRange(pos) {
 
     let destination = pos.findClosestByPath( //link
         pos.findInRange(FIND_STRUCTURES, 1, {
-            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === StructureLink; }
+            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === STRUCTURE_LINK; }
         })
     );
     if (pos.x === 4 && pos.y === 11) msg(pos, 'closest link: ' + destination);
