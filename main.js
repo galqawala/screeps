@@ -545,9 +545,8 @@ function getBuildTaskInRange(pos) {
 }
 
 function getTransferTaskInRange(pos) {
-    let sources = pos.findInRange(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } });
+    let sources = pos.findInRange(FIND_SOURCES, 1, { filter: (source) => { return getEnergy(source) > 0; } });
     if (sources.length < 1) {
-        if (pos.x === 4 && pos.y === 11) msg(pos, 'nothing to harvest, no need to transfer');
         return; //no need to transfer
     }
 
@@ -556,7 +555,6 @@ function getTransferTaskInRange(pos) {
             filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === StructureLink; }
         })
     );
-    msg(pos, 'transfer to link: ' + destination);
     if (!destination) {
         destination = pos.findClosestByPath( //carrier
             pos.findInRange(FIND_CREEPS, 1, {
