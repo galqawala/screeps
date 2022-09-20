@@ -302,7 +302,6 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         let task = getTaskForWorker(creep);
-        msg(creep, 'task: destination: ' + task.destination + ' action: ' + task.action);
         creep.memory.action = task.action;
         return task.destination;
     } else if (role === 'carrier') {
@@ -644,7 +643,6 @@ function getRepairTask(creep) {
 }
 
 function getTaskForWorker(creep) {
-    msg(creep, 'getTaskForWorker()');
     if (isFull(creep)) { //spend energy without moving
         let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
         if (task) return task;
