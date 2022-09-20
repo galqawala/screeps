@@ -831,6 +831,8 @@ function rangeToSource(pos) {
 }
 
 function shuffle(unshuffled) {
+    if (!unshuffled) return unshuffled;
+
     return unshuffled
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
@@ -993,7 +995,11 @@ function hasStructureInRange(pos, structureType, range, includeConstructionSites
 }
 
 function getPosForContainer(room) {
-    let spots = shuffle(room.memory.harvestSpots);
+    let harvestSpots = room.memory.harvestSpots;
+
+    if (!harvestSpots) return;
+
+    let spots = shuffle(harvestSpots);
     for (let i = 0; i < spots.length; i++) {
         let spot = spots[i];
         let pos = new RoomPosition(spot.x, spot.y, spot.roomName);
@@ -1001,7 +1007,7 @@ function getPosForContainer(room) {
         if (pos.lookFor(LOOK_CONSTRUCTION_SITES).length) continue;
         return pos;
     }
-    return null;
+    return;
 }
 
 function adjustConstructionSiteScoreForLink(score, pos) {
