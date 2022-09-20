@@ -546,7 +546,10 @@ function getBuildTaskInRange(pos) {
 
 function getTransferTaskInRange(pos) {
     let sources = pos.findInRange(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } });
-    if (sources.length < 1) return; //no need to transfer
+    if (sources.length < 1) {
+        msg(pos, 'nothing to harvest, no need to transfer');
+        return; //no need to transfer
+    }
 
     let destination = pos.findClosestByPath( //link
         pos.findInRange(FIND_STRUCTURES, 1, {
