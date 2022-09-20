@@ -88,6 +88,12 @@ function handleRoom(room) {
         msg(room, 'Structures: ' + room.memory.structureCount + ' ➤ ' + structureCount, true);
         room.memory.structureCount = structureCount;
     }
+    //status
+    let status = roomStatus(room.name);
+    if (room.memory.status !== status) {
+        msg(room, 'Status: ' + room.memory.status + ' ➤ ' + status, true);
+        room.memory.status = status;
+    }
 }
 
 function handleHostilesInRoom(room) {
@@ -845,8 +851,13 @@ function canHarvestInRoom(room) {
     return false;
 }
 
-function isRoomSafe(roomName) {
-    if (Game.map.getRoomStatus(roomName).status !== 'novice') return false;
+function roomStatus(roomName) {
+    return Game.map.getRoomStatus(roomName).status;
+}
+
+function isRoomSafe(roomName, currentRoomName) {
+    if (roomStatus(currentRoomName) === 'novice' && roomStatus(roomName) !== 'novice') return false;
+    if (roomStatus(roomName) === 'closed') return false;
     if (!(Memory.rooms[roomName])) return true;
     if (Memory.rooms[roomName].hostilesPresent) return false;
     return true;
@@ -854,7 +865,7 @@ function isRoomSafe(roomName) {
 
 function getExit(pos) {
     let exits = Game.map.describeExits(pos.roomName);
-    let accessibleRooms = Object.values(exits).filter(roomName => isRoomSafe(roomName));
+    let accessibleRooms = Object.values(exits).filter(roomName => isRoomSafe(roomName, pos.roomName));
     let destinationRoomName = randomItem(accessibleRooms);
     let findExit = Game.map.findExit(pos.roomName, destinationRoomName);
     if (findExit === ERR_NO_PATH) {
