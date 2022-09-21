@@ -286,17 +286,24 @@ function handleCreep(creep) {
 
     let actionOutcome = action(creep, destination);
 
-    //time we got to the destination proximity
-    if (destination && !(creep.memory.timeArrivedToDestinationProximity) && creep.pos.getRangeTo(destination) <= 3) {
-        creep.memory.timeArrivedToDestinationProximity = Game.time;
-    }
     postAction(creep, destination, actionOutcome);
 
     if (role === 'worker' && !useLink(creep)) orderEnergy(creep, destination);
-    memorizeCreepState(creep);
+    memorizeCreepState(creep, destination);
+
+    if (destination
+        && (
+            (creep.memory.timeApproachedDestination) > (creep.memory.lastOkActionTime || 0)
+            || (destination instanceof RoomPosition && creep.memory.rangeToDestination > 0)
+        ) && (creep.memory.timeApproachedDestination) < (Game.time - 10)
+    ) {
+        creep.say('⌛️');
+        resetDestination(creep);
+        memorizeBlockedObject(creep, destination);
+    }
 }
 
-function memorizeCreepState(creep) {
+function memorizeCreepState(creep, destination) {
     if (((creep.memory.x || -1) !== creep.pos.x) || ((creep.memory.y || -1) !== creep.pos.y)) {
         creep.memory.x = creep.pos.x;
         creep.memory.y = creep.pos.y;
@@ -305,6 +312,15 @@ function memorizeCreepState(creep) {
     }
     creep.memory.empty = isEmpty(creep);
     creep.memory.full = isFull(creep);
+    if (destination) {
+        let range = creep.pos.getRangeTo(destination);
+        if (range) {
+            if (creep.memory.rangeToDestination > range) {
+                creep.memory.timeApproachedDestination = Game.time;
+            }
+            creep.memory.rangeToDestination = range;
+        }
+    }
     updateConstructionSiteScoreForCreep(creep);
 }
 
@@ -424,7 +440,8 @@ function postAction(creep, destination, actionOutcome) {
         creep.memory.lastOkActionTime = Game.time;
     } else {
         if (actionOutcome === ERR_NOT_IN_RANGE) {
-            handleNotInRange(creep, destination);
+            let pathColor = hashColor(creep.memory.role);
+            creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
         } else if (actionOutcome === ERR_FULL) {
             resetDestination(creep);
             handleCreep(creep);
@@ -448,20 +465,6 @@ function postAction(creep, destination, actionOutcome) {
             creep.memory.destination = getExit(creep.pos);
             creep.memory.destinationSetTime = Game.time;
         }
-    }
-}
-
-function handleNotInRange(creep, destination) {
-    if (destination
-        && (creep.memory.timeArrivedToDestinationProximity) > (creep.memory.lastOkActionTime || 0)
-        && (creep.memory.timeArrivedToDestinationProximity) < (Game.time - 10)
-    ) {
-        creep.say('⌛️');
-        resetDestination(creep);
-        memorizeBlockedObject(creep, destination);
-    } else {
-        let pathColor = hashColor(creep.memory.role);
-        creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     }
 }
 
@@ -1310,7 +1313,7 @@ function resetDestination(creep) {
     let destination = Game.getObjectById(creep.memory.destination);
     creep.memory.destination = null;
     creep.memory.destinationSetTime = Game.time;
-    creep.memory.timeArrivedToDestinationProximity = null;
+    creep.memory.timeApproachedDestination = null;
     creep.memory.action = null;
     if (destination && destination.memory && destination.memory.awaitingDeliveryFrom) {
         destination.memory.awaitingDeliveryFrom = null;
