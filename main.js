@@ -307,8 +307,12 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         let task = getTaskForWorker(creep);
-        creep.memory.action = task.action;
-        return task.destination;
+        if (task) {
+            creep.memory.action = task.action;
+            return task.destination;
+        } else {
+            msg(creep, 'no task for me');
+        }
     } else if (role === 'carrier') {
         let upstream = isFull(creep) ? [] : getEnergySources(myMinTransfer); //energy sources
         let downstream = isEmpty(creep) ? [] : getEnergyDestinations(); //energy destinations
