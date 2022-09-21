@@ -79,23 +79,19 @@ function handleRoom(room) {
     if (!(room.memory.upgradeSpots)) updateUpgradeSpots(room);
     if (!(room.memory.harvestSpots)) updateHarvestSpots(room);
 
-    //numbers
-    let constructionSiteCount = room.find(FIND_MY_CONSTRUCTION_SITES).length;
-    if (room.memory.constructionSiteCount !== constructionSiteCount) {
-        msg(room, 'Construction sites: ' + room.memory.constructionSiteCount + ' ➤ ' + constructionSiteCount, true);
-        room.memory.constructionSiteCount = constructionSiteCount;
-    }
-    let structureCount = room.find(FIND_STRUCTURES).length;
-    if (room.memory.structureCount !== structureCount) {
-        msg(room, 'Structures: ' + room.memory.structureCount + ' ➤ ' + structureCount, true);
-        room.memory.structureCount = structureCount;
-        updateHarvestSpots(room);
-    }
-    //status
-    let status = roomStatus(room.name);
-    if (room.memory.status !== status) {
-        msg(room, 'Status: ' + room.memory.status + ' ➤ ' + status, true);
-        room.memory.status = status;
+    //room details
+    let roomDetails = {
+        constructionSiteCount: room.find(FIND_MY_CONSTRUCTION_SITES).length
+        , structureCount: room.find(FIND_STRUCTURES).length
+        , status: roomStatus(room.name)
+        , canHarvest: canHarvestInRoom(room)
+    };
+    for (const property in roomDetails) {
+        let value = roomDetails[property];
+        if (room.memory[property] !== value) {
+            msg(room, property + ': ' + room.memory[property] + ' ➤ ' + value, true);
+            room.memory[property] !== value;
+        }
     }
 }
 
@@ -682,7 +678,7 @@ function getAvailableHarvestSpots(room) {
 function creepsOnWayToPos(pos) {
     for (const i in Game.creeps) {
         let creep = Game.creeps[i];
-        msg(creep, 'destination: ' + creep.memory.destination);
+        msg(creep, 'destination: ' + creep.memory.destination + ' === ' + pos + ' ' + posEquals(creep.memory.destination, pos));
     }
     return _(Game.creeps).filter(function (creep) {
         return posEquals(creep.memory.destination, pos);
@@ -929,7 +925,8 @@ function isRoomSafe(roomName, currentRoomName) {
 
 function getExit(pos) {
     let exits = Game.map.describeExits(pos.roomName);
-    let accessibleRooms = Object.values(exits).filter(roomName => isRoomSafe(roomName, pos.roomName));
+    let accessibleRooms = Object.values(exits).filter(roomName =>
+        isRoomSafe(roomName, pos.roomName) && Memory.rooms[roomName].canHarvest);
     let destinationRoomName = randomItem(accessibleRooms);
     let findExit = Game.map.findExit(pos.roomName, destinationRoomName);
     if (findExit === ERR_NO_PATH) {
