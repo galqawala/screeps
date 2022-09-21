@@ -632,6 +632,8 @@ function getEnergySourceTask(myMinTransfer, pos) {
         action = 'moveTo';
     }
 
+    msg(pos, 'getEnergySourceTask() action: ' + action + ' dest: ' + destination);
+
     return { action: action, destination: destination };
 }
 
