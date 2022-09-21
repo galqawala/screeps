@@ -1236,7 +1236,7 @@ function msg(context, msg, email = false) {
 }
 
 function nameForCreep(role) {
-    let characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let characters = 'ABCDEFGHJKLMNPQRTUVWXYZ2346789';
     let name = role.substring(0, 1);
     while (Game.creeps[name]) {
         name += characters.charAt(Math.floor(Math.random() * characters.length));
