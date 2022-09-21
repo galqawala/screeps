@@ -90,7 +90,7 @@ function handleRoom(room) {
         let value = roomDetails[property];
         if (room.memory[property] !== value) {
             msg(room, property + ': ' + room.memory[property] + ' ➤ ' + value, true);
-            room.memory[property] !== value;
+            room.memory[property] = value;
         }
     }
 }
