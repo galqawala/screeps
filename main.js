@@ -580,9 +580,9 @@ function getTransferTaskInRange(pos) {
     }
 }
 
-function getHarvestTaskInRange(pos) {
+function getHarvestTaskCloseby(pos) {
     let destination = pos.findClosestByPath(
-        pos.findInRange(FIND_SOURCES, 1, {
+        pos.findInRange(FIND_SOURCES, 2, {
             filter: (target) => { return getEnergy(target) > 0; }
         })
     );
@@ -657,7 +657,7 @@ function getTaskForWorker(creep) {
         let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
         if (task) return task;
     }
-    let task = getHarvestTaskInRange(creep.pos); //harvest without moving
+    let task = getHarvestTaskCloseby(creep.pos);
     if (task) return task;
     if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
         //fetch nearby energy
