@@ -601,6 +601,7 @@ function getEnergySourceTask(myMinTransfer, pos) {
 
     for (const i in Game.rooms) {
         let room = Game.rooms[i];
+        msg(room, 'getEnergySourceTask()');
         sources = sources
             .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
             .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
