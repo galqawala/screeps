@@ -638,6 +638,7 @@ function getAvailableHarvestSpots(room) {
 
     spots.forEach(spot => {
         let pos = RoomPosition(spot.x, spot.y, spot.roomName);
+        if (!pos) msg(room, 'getAvailableHarvestSpots() missing pos for spot: ' + spot);
         if (pos.findInRange(FIND_SOURCES_ACTIVE, 1).length >= 1
             && pos.lookFor(LOOK_CREEPS).length < 1
             && !creepsOnWayToPos(pos)) {
