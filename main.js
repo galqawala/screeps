@@ -638,14 +638,12 @@ function getAvailableHarvestSpots(room) {
 
     spots.forEach(spot => {
         let pos = new RoomPosition(spot.x, spot.y, spot.roomName);
-        msg(room, 'spot x: ' + spot.x + ' y: ' + spot.y + ' roomName: ' + spot.roomName);
-        msg(room, 'pos x: ' + pos.x + ' y: ' + pos.y + ' roomName: ' + pos.roomName);
-        /*        if (pos.findInRange(FIND_SOURCES_ACTIVE, 1).length >= 1
-                    && pos.lookFor(LOOK_CREEPS).length < 1
-                    && !creepsOnWayToPos(pos)) {*/
+        if (pos.findInRange(FIND_SOURCES_ACTIVE, 1).length >= 1
+            && pos.lookFor(LOOK_CREEPS).length < 1
+            && !creepsOnWayToPos(pos)) {
 
-        availableSpots += spot;
-        //        }
+            availableSpots += pos;
+        }
     });
 
     return availableSpots;
