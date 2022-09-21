@@ -5,7 +5,6 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
-    msg(null, '-------------');
     for (const i in Game.creeps) handleCreep(Game.creeps[i]);
     for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
@@ -255,8 +254,6 @@ function getDestinationFromMemory(creep) {
 }
 
 function handleCreep(creep) {
-    msg(creep, 'handle');
-
     if (creep.memory.role === 'upgrader' || creep.memory.role === 'harvester') creep.memory.role === 'worker';
     if (creep.spawning) return;
 
@@ -602,7 +599,6 @@ function getEnergySourceTask(myMinTransfer, pos) {
 
     for (const i in Game.rooms) {
         let room = Game.rooms[i];
-        msg(room, 'getEnergySourceTask()');
         sources = sources
             .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
             .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
@@ -618,7 +614,6 @@ function getEnergySourceTask(myMinTransfer, pos) {
             }));
         if (canHarvestInRoom(room)) {
             sources = sources.concat(getAvailableHarvestSpots(room));
-            msg(pos, 'harvest spots added: ' + sources);
         }
     }
 
@@ -633,8 +628,6 @@ function getEnergySourceTask(myMinTransfer, pos) {
     } else if (destination instanceof RoomPosition) {
         action = 'moveTo';
     }
-
-    msg(pos, 'getEnergySourceTask() action: ' + action + ' dest: ' + destination);
 
     return { action: action, destination: destination };
 }
