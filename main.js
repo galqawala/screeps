@@ -671,6 +671,7 @@ function getAvailableHarvestSpots(room) {
             && pos.lookFor(LOOK_CREEPS).length < 1
             && !creepsOnWayToPos(pos)) {
 
+            msg(room, 'no creeps on way to: ' + pos);
             availableSpots.push(pos);
         }
     });
@@ -713,7 +714,10 @@ function getTaskForWorker(creep) {
     if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
         //fetch nearby energy
         let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
-        if (task) return task;
+        if (task) {
+            msg(creep, task);
+            return task;
+        }
         return { action: 'moveTo', destination: getExit(creep.pos) };
     } else if (!isEmpty(creep)) {
         //upgrade the room controller if it's about to downgrade
