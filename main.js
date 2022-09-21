@@ -716,7 +716,7 @@ function getTaskForWorker(creep) {
         //fetch nearby energy
         let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
         if (task) {
-            msg(creep, task);
+            msg(creep, 'action: ' + task.action + ' dest: ' + task.destination);
             return task;
         }
         return { action: 'moveTo', destination: getExit(creep.pos) };
