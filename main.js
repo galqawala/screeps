@@ -902,7 +902,7 @@ function shuffle(unshuffled) {
 function canHarvestInRoom(room) {
     if (!(room.controller)) return true; //no controller
     if (room.controller.my) return true; //my controller
-    if (!(room.controller.owner)) return true; //no owner
+    if (!(room.controller.owner) && !(room.controller.reservation)) return true; //no owner & no reservation
     return false;
 }
 
