@@ -625,6 +625,8 @@ function getEnergySourceTask(myMinTransfer, pos) {
         action = 'harvest';
     } else if (destination instanceof Resource) {
         action = 'pickup';
+    } else if (destination instanceof RoomPosition) {
+        action = 'moveTo';
     }
 
     return { action: action, destination: destination };
