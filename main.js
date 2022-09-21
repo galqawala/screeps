@@ -1138,7 +1138,7 @@ function handleSpawn(spawn) {
 }
 
 function carriersNeeded() {
-    return getEnergySources(100).length > getCreepCountByRole('carrier');
+    return (getEnergySources(100).length / 2) > getCreepCountByRole('carrier');
 }
 
 function spawnCreep(spawn, roleToSpawn, energyAvailable) {
