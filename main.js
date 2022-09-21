@@ -482,7 +482,7 @@ function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = fa
                 }
             }));
         if (allowSource && canHarvestInRoom(room)) {
-            sources = sources.concat(room.find(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } }));
+            sources = sources.concat(room.find(FIND_SOURCES_ACTIVE));
         }
     }
 
@@ -551,7 +551,7 @@ function getBuildTaskInRange(pos) {
 }
 
 function getTransferTaskInRange(pos) {
-    let sources = pos.findInRange(FIND_SOURCES, 1, { filter: (source) => { return getEnergy(source) > 0; } });
+    let sources = pos.findInRange(FIND_SOURCES_ACTIVE, 1);
     if (sources.length < 1) {
         return; //no need to transfer
     }
@@ -581,11 +581,7 @@ function getTransferTaskInRange(pos) {
 }
 
 function getHarvestTaskCloseby(pos) {
-    let destination = pos.findClosestByPath(
-        pos.findInRange(FIND_SOURCES, 2, {
-            filter: (target) => { return getEnergy(target) > 0; }
-        })
-    );
+    let destination = pos.findClosestByPath(pos.findInRange(FIND_SOURCES_ACTIVE, 2));
     if (destination) {
         return { action: 'harvest', destination: destination };
     }
@@ -593,6 +589,7 @@ function getHarvestTaskCloseby(pos) {
 
 function getUpgradeTask(room, urgentOnly) {
     if (!(room.controller)) return;
+    if (!(room.controller.my)) return;
     if (urgentOnly && room.controller.ticksToDowngrade > 2000) return;
     return { action: 'upgradeController', destination: room.controller };
 }
@@ -616,7 +613,7 @@ function getEnergySourceTask(myMinTransfer, pos) {
                 }
             }));
         if (canHarvestInRoom(room)) {
-            sources = sources.concat(room.find(FIND_SOURCES, { filter: (source) => { return getEnergy(source) > 0; } }));
+            sources = sources.concat(getAvailableHarvestSpots(room));
         }
     }
 
@@ -631,6 +628,32 @@ function getEnergySourceTask(myMinTransfer, pos) {
     }
 
     return { action: action, destination: destination };
+}
+
+function getAvailableHarvestSpots(room) {
+    let spots = room.memory.harvestSpots;
+    let availableSpots = [];
+
+    spots.forEach(spot => {
+        let pos = RoomPosition(spot.x, spot.y, spot.roomName);
+        if (pos.findInRange(FIND_SOURCES_ACTIVE, 1).length >= 1
+            && pos.lookFor(LOOK_CREEPS).length < 1
+            && !creepsOnWayToPos(pos)) {
+
+            availableSpots += spot;
+        }
+    });
+
+    return availableSpots;
+}
+
+function creepsOnWayToPos(pos) {
+    return _(Game.creeps).filter(function (creep) {
+        return creep.memory.destination
+            && creep.memory.destination.x === pos.x
+            && creep.memory.destination.y === pos.y
+            && creep.memory.destination.roomName === pos.roomName;
+    }).length > 0;
 }
 
 function getRepairTask(creep) {
@@ -933,7 +956,7 @@ function getPosForStorage(room) {
             if (x === targetPos.x && y === targetPos.y) continue;
             if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
             let pos = new RoomPosition(x, y, room.name);
-            let score = workSpotsAround(pos, 'upgrade');
+            let score = countWorkSpotsAround(pos, 'upgrade');
             if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
             if (bestScore < score) {
                 bestScore = score;
@@ -967,7 +990,7 @@ function getPrimaryPosForLink(room) {
                     if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
                     let pos = new RoomPosition(x, y, room.name);
                     let task = (target instanceof StructureController ? 'upgrade' : 'harvest');
-                    let score = workSpotsAround(pos, task);
+                    let score = countWorkSpotsAround(pos, task);
                     if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
                     if (bestScore < score) {
                         bestScore = score;
@@ -981,7 +1004,7 @@ function getPrimaryPosForLink(room) {
     }
 }
 
-function workSpotsAround(pos, task) {
+function countWorkSpotsAround(pos, task) {
     let spots = (task === 'upgrade')
         ? Memory.rooms[pos.roomName].upgradeSpots
         : Memory.rooms[pos.roomName].harvestSpots;
