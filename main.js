@@ -1,4 +1,5 @@
 //ToDo: use TypeScript to avoid mistakes like: let foo=[]; foo+=1; (1)
+//  https://github.com/screepers/screeps-typescript-starter
 
 //  https://stackoverflow.com/questions/14733374/how-to-generate-an-md5-file-hash-in-javascript-node-js
 // eslint-disable-next-line semi, no-extra-semi, quotes, no-unused-vars, no-undef, no-var, max-len
@@ -88,6 +89,7 @@ function handleRoom(room) {
     if (room.memory.structureCount !== structureCount) {
         msg(room, 'Structures: ' + room.memory.structureCount + ' ➤ ' + structureCount, true);
         room.memory.structureCount = structureCount;
+        updateHarvestSpots(room);
     }
     //status
     let status = roomStatus(room.name);
@@ -157,11 +159,16 @@ function updateHarvestSpots(room) {
                 if (x === targetPos.x && y === targetPos.y) continue;
                 if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
                 let pos = new RoomPosition(x, y, room.name);
+                if (blockedByStructure(pos)) continue;
                 if (!containsPosition(spots, pos)) spots.push(pos);
             }
         }
         room.memory.harvestSpots = spots;
     });
+}
+
+function blockedByStructure(pos) {
+    return pos.lookFor(LOOK_STRUCTURES).filter(structure => structure.structureType !== STRUCTURE_CONTAINER).length > 0;
 }
 
 function containsPosition(list, pos) {
