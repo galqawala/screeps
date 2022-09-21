@@ -435,7 +435,7 @@ function postAction(creep, destination, actionOutcome) {
 function handleNotInRange(creep, destination) {
     if (destination
         && (creep.memory.timeArrivedToDestinationProximity) > (creep.memory.lastOkActionTime || 0)
-        && (creep.memory.timeArrivedToDestinationProximity) < (Game.time - 20)
+        && (creep.memory.timeArrivedToDestinationProximity) < (Game.time - 10)
     ) {
         creep.say('⌛️');
         resetDestination(creep);
