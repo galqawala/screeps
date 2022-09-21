@@ -364,7 +364,8 @@ function actionByDestinationType(creep, destination) {
         actionOutcome = creep.upgradeController(destination);
     } else if (destination instanceof ConstructionSite) {
         actionOutcome = creep.build(destination);
-        creep.room.memory.lastEnergyConsumingTask = destination.id;
+        let destinationRoomName = destination.roomName || destination.pos.roomName;
+        Memory.rooms[destinationRoomName].lastEnergyConsumingTask = destination.id;
     } else if (destination instanceof Resource) {
         actionOutcome = creep.pickup(destination);
     } else if (destination instanceof Tombstone
@@ -712,7 +713,10 @@ function getTaskForWorker(creep) {
         if (!task) task = getUpgradeTask(creep.room, false);
         //return the final destination
         if (task) {
-            if (task.destination.id) creep.room.memory.lastEnergyConsumingTask = task.destination.id;
+            if (task.destination.id) {
+                let destinationRoomName = task.destination.roomName || task.destination.pos.roomName;
+                Memory.rooms[destinationRoomName].lastEnergyConsumingTask = task.destination.id;
+            }
             return task;
         }
     }
