@@ -1148,7 +1148,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable) {
     Each MOVE body part decreases fatigue points by 2 per tick.
     The creep cannot move when its fatigue is greater than zero.    */
     let ratios;
-    if (roleToSpawn === 'worker') ratios = { move: 3, work: 3, carry: 1 };
+    if (roleToSpawn === 'worker') ratios = { move: 4, work: 3, carry: 1 };
     else if (roleToSpawn === 'carrier' || roleToSpawn === 'spawner') ratios = { move: 1, carry: 1 };
 
     let body = bodyByRatio(ratios, energyAvailable);
