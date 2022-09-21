@@ -679,10 +679,9 @@ function creepsOnWayToPos(pos) {
     for (const i in Game.creeps) {
         let creep = Game.creeps[i];
         msg(creep, 'destination: ' + creep.memory.destination + ' === ' + pos + ' ' + posEquals(creep.memory.destination, pos));
+        if (posEquals(creep.memory.destination, pos)) return true;
     }
-    return _(Game.creeps).filter(function (creep) {
-        return posEquals(creep.memory.destination, pos);
-    }).length > 0;
+    return false;
 }
 
 function getRepairTask(creep) {
