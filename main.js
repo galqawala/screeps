@@ -1249,7 +1249,6 @@ function hasImportantTask(creep) {
 }
 
 function resetDestination(creep) {
-    if (creep.name === 'wH' || creep.name === 'w5') msg(creep, 'reset');
     //save last values
     creep.memory.lastDestination = creep.memory.destination;
     creep.memory.lastAction = creep.memory.action;
