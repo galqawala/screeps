@@ -616,6 +616,7 @@ function getEnergySourceTask(myMinTransfer, pos) {
             }));
         if (canHarvestInRoom(room)) {
             sources = sources.concat(getAvailableHarvestSpots(room));
+            msg(pos, 'harvest spots added: ' + sources);
         }
     }
 
