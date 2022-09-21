@@ -679,10 +679,7 @@ function getAvailableHarvestSpots(room) {
 
 function creepsOnWayToPos(pos) {
     return _(Game.creeps).filter(function (creep) {
-        return creep.memory.destination
-            && creep.memory.destination.x === pos.x
-            && creep.memory.destination.y === pos.y
-            && creep.memory.destination.roomName === pos.roomName;
+        return posEquals(creep.memory.destination, pos);
     }).length > 0;
 }
 
