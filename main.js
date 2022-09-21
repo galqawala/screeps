@@ -636,6 +636,7 @@ function getAvailableHarvestSpots(room) {
     let spots = room.memory.harvestSpots;
     let availableSpots = [];
 
+    return availableSpots;
     spots.forEach(spot => {
         let pos = new RoomPosition(spot.x, spot.y, spot.roomName);
         if (!pos) {
