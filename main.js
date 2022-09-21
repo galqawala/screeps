@@ -667,7 +667,6 @@ function getAvailableHarvestSpots(room) {
             && pos.lookFor(LOOK_CREEPS).length < 1
             && !creepsOnWayToPos(pos)) {
 
-            msg(room, 'no creeps on way to: ' + pos);
             availableSpots.push(pos);
         }
     });
@@ -678,7 +677,6 @@ function getAvailableHarvestSpots(room) {
 function creepsOnWayToPos(pos) {
     for (const i in Game.creeps) {
         let creep = Game.creeps[i];
-        msg(creep, 'destination: ' + creep.memory.destination + ' === ' + pos + ' ' + posEquals(creep.memory.destination, pos));
         if (posEquals(creep.memory.destination, pos)) return true;
     }
     return false;
@@ -714,7 +712,6 @@ function getTaskForWorker(creep) {
         //fetch nearby energy
         let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
         if (task) {
-            msg(creep, 'action: ' + task.action + ' dest: ' + task.destination);
             return task;
         }
         return { action: 'moveTo', destination: getExit(creep.pos) };
