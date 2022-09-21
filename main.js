@@ -599,7 +599,7 @@ function getHarvestTaskCloseby(pos) {
     }
 }
 
-function getUpgradeTask(urgentOnly) {
+function getUpgradeTask(pos, urgentOnly) {
     let targets = [];
     for (const i in Game.rooms) {
         let room = Game.rooms[i];
@@ -608,7 +608,7 @@ function getUpgradeTask(urgentOnly) {
         if (urgentOnly && room.controller.ticksToDowngrade > 2000) continue;
         targets.push(room.controller);
     }
-    let destination = closest(targets);
+    let destination = closest(pos, targets);
     if (destination) return { action: 'upgradeController', destination: destination };
 }
 
@@ -709,7 +709,7 @@ function getTaskForWorker(creep) {
         return { action: 'moveTo', destination: getExit(creep.pos) };
     } else if (!isEmpty(creep)) {
         //upgrade the room controller if it's about to downgrade
-        let task = getUpgradeTask(creep.room, true);
+        let task = getUpgradeTask(creep.pos, true);
         //repair structures
         if (!task) task = getRepairTask(creep);
         //build structures
@@ -718,7 +718,7 @@ function getTaskForWorker(creep) {
             if (destination) task = { action: 'build', destination: destination };
         }
         //upgrade the room controller
-        if (!task) task = getUpgradeTask(creep.room, false);
+        if (!task) task = getUpgradeTask(creep.pos, false);
         //return the final destination
         if (task) {
             if (task.destination.id) {
