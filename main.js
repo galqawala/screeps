@@ -254,6 +254,8 @@ function getDestinationFromMemory(creep) {
 }
 
 function handleCreep(creep) {
+    msg(creep, 'handle');
+
     if (creep.memory.role === 'upgrader' || creep.memory.role === 'harvester') creep.memory.role === 'worker';
     if (creep.spawning) return;
 
