@@ -649,7 +649,7 @@ function getAvailableHarvestSpots(room) {
             && pos.lookFor(LOOK_CREEPS).length < 1
             && !creepsOnWayToPos(pos)) {
 
-            availableSpots += pos;
+            availableSpots.push(pos);
         }
     });
 
