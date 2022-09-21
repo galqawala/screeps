@@ -230,7 +230,12 @@ function getDestinationFromMemory(creep) {
         if (typeof destination === 'string') {
             destination = Game.getObjectById(creep.memory.destination);
         } else if ('x' in destination && 'y' in destination && 'roomName' in destination) {
-            destination = new RoomPosition(destination.x, destination.y, destination.roomName);
+            if (posEquals(creep.pos, destination)) {
+                creep.say('🛬');
+                destination = resetDestination(creep); //arrived
+            } else {
+                destination = new RoomPosition(destination.x, destination.y, destination.roomName); //keep going
+            }
         }
 
         if (destination instanceof RoomPosition && creep.room.name !== destination.roomName
@@ -292,6 +297,10 @@ function memorizeCreepState(creep) {
     creep.memory.empty = isEmpty(creep);
     creep.memory.full = isFull(creep);
     updateConstructionSiteScoreForCreep(creep);
+}
+
+function posEquals(a, b) {
+    return a.x === b.x && a.y === b.y && a.roomName === b.roomName;
 }
 
 function setDestination(creep, destination) {
