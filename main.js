@@ -1,4 +1,4 @@
-/*  ToDo: 
+/*  ToDo:
 
 loop handleCreep() until we are sure it cannot do anything else. Or atleast retry the action after moveTo()?
 
@@ -265,7 +265,8 @@ function getDestinationFromMemory(creep) {
 
         if (creep.memory.action === 'repair' && !needsRepair(destination)) destination = resetDestination(creep);
 
-        if (destination && creep.pos.roomName !== creep.memory.roomName && creep.pos.roomName === destination.pos.roomName) {
+        if (destination && creep.pos.roomName !== creep.memory.roomName
+            && creep.pos.roomName === (destination.roomName || destination.pos.roomName)) {
             /*  we've just arrived to the destination room, let's reconsider the destination,
                 now that we can calculate the distances within the room */
             destination = resetDestination(creep);
