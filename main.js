@@ -1,5 +1,19 @@
-//ToDo: use TypeScript to avoid mistakes like: let foo=[]; foo+=1; (1)
-//  https://github.com/screepers/screeps-typescript-starter
+/*  ToDo: 
+
+use OBSTACLE_OBJECT_TYPES
+
+loop handleCreep() until we are sure it cannot do anything else. Or atleast retry the action after moveTo()?
+
+Static harvesters. They get assigned to a specific harvest spot for their whole life. 
+They never move once reaching the spot. One harvester per source. 
+They should harvest the assigned spot or build/repair/transfer without moving.
+If I create a creep with this many work parts:
+`Game.getObjectById('5bbcad4b9099fc012e6370ef').energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER`
+, I could have it at the source all the time and it will harvest as fast as the source regenerates? That should be efficient?
+
+use TypeScript to avoid mistakes like: let foo=[]; foo+=1; (1)
+    https://github.com/screepers/screeps-typescript-starter
+*/
 
 //  https://stackoverflow.com/questions/14733374/how-to-generate-an-md5-file-hash-in-javascript-node-js
 // eslint-disable-next-line semi, no-extra-semi, quotes, no-unused-vars, no-undef, no-var, max-len
@@ -1181,7 +1195,7 @@ function handleSpawn(spawn) {
 
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
             aggregated + (item.memory.role === roleToSpawn ? bodyCost(item.body.map(part => part.type)) : 0), 0 /*initial*/) || 0;
-        let budget = Math.min(costOfCurrentCreepsInTheRole / 2, room.energyCapacityAvailable);
+        let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
         if (!(room.memory.roleToSpawn) || room.memory.roleToSpawn !== roleToSpawn) {
             msg(spawn, 'Next role to spawn: ' + roleToSpawn + ', energy budget: ' + budget);
