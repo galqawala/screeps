@@ -1,7 +1,5 @@
 /*  ToDo: 
 
-use OBSTACLE_OBJECT_TYPES
-
 loop handleCreep() until we are sure it cannot do anything else. Or atleast retry the action after moveTo()?
 
 Static harvesters. They get assigned to a specific harvest spot for their whole life. 
@@ -178,7 +176,7 @@ function updateHarvestSpots(room) {
 }
 
 function blockedByStructure(pos) {
-    return pos.lookFor(LOOK_STRUCTURES).filter(structure => structure.structureType !== STRUCTURE_CONTAINER).length > 0;
+    return pos.lookFor(LOOK_STRUCTURES).filter(structure => OBSTACLE_OBJECT_TYPES.includes(structure.structureType)).length > 0;
 }
 
 function containsPosition(list, pos) {
@@ -766,10 +764,9 @@ function getConstructionSites(creep) {
 function isUnderRepair(structure) {
     if (!structure) return false;
     if (!(structure.id)) return false;
-    let creepsRepairingIt = _(Game.creeps).filter(function (creep) {
+    let creepsRepairingIt = Object.values(Game.creeps).filter(function (creep) {
         return creep.memory.action === 'repair' && creep.memory.destination === structure.id;
-    }
-    ).value().length;
+    }).length;
     if (creepsRepairingIt) return true;
     return false;
 }
@@ -849,9 +846,9 @@ function orderEnergy(creep, destination) {
         && (creep.memory.timeOfLastEnergyReceived || 0) < Game.time
         && !getEnergySourceNearby(creep)
     ) {
-        let carriers = _(Game.creeps).filter(function (carrier) {
+        let carriers = Object.values(Game.creeps).filter(function (carrier) {
             return carrier.memory.role === 'carrier' && !isEmpty(carrier) && !hasImportantTask(carrier);
-        }).value();
+        });
         let carrier = creep.pos.findClosestByPath(carriers);
         if (carrier) {
             carrier.memory.destination = creep.id; //deliver to me
@@ -1289,9 +1286,9 @@ function countStructures(room, structureType, includeConstructionSites) {
 }
 
 function getCreepCountByRole(role, inactiveOnly = false) {
-    return _(Game.creeps).filter(function (creep) {
+    return Object.values(Game.creeps).filter(function (creep) {
         return creep.memory.role === role && (!inactiveOnly || creep.memory.lastActionOutcome !== OK);
-    }).value().length;
+    }).length;
 }
 
 function bodyCost(body) {
