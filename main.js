@@ -343,41 +343,46 @@ function setDestination(creep, destination) {
 
 function getNewDestination(creep) {
     let role = creep.memory.role;
-    let myMinTransfer = minTransferAmount(creep);
+    let task;
 
     if (role === 'worker') {
-        let task = getTaskForWorker(creep);
-        if (task) {
-            creep.memory.action = task.action;
-            return task.destination;
-        } else {
-            msg(creep, 'no task for me');
-        }
+        task = getTaskForWorker(creep);
     } else if (role === 'carrier') {
-        let tasks = [];
-        if (!isFull(creep)) {
-            let task = getEnergySourceTask(myMinTransfer, creep.pos, false, false, false);
-            if (task) tasks.push(task);
-        }
-        if (!isEmpty(creep)) {
-            tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
-        }
-        let task = closestTask(creep.pos, tasks);
-        if (task) {
-            creep.memory.action = task.action;
-            return task.destination;
-        } else {
-            msg(creep, 'no task for me');
-        }
+        task = getTaskForCarrier(creep);
     } else if (role === 'spawner') {
-        let spawnerUpstream = isFull(creep) ? [] :
-            getEnergySources(myMinTransfer, true); //energy sources
-        let spawnerDownstream = isEmpty(creep) ? [] : getGlobalEnergyStructures(); //energy destinations
-        let destination = closest(creep.pos, spawnerUpstream.concat(spawnerDownstream));
-        if (destination instanceof StructureStorage || destination instanceof StructureLink) creep.memory.action = 'withdraw';
-        if (destination && destination.memory) destination.memory.awaitingDeliveryFrom = creep.name;
-        return destination;
+        task = getTaskForSpawner(creep);
     }
+
+    if (task) {
+        creep.memory.action = task.action;
+        return task.destination;
+    } else {
+        msg(creep, 'no task for me');
+    }
+}
+
+function getTaskForSpawner(creep) {
+    let tasks = [];
+    if (!isFull(creep)) {
+        let task = getEnergySourceTask(minTransferAmount(creep), creep.pos, true, true, false);
+        if (task) tasks.push(task);
+    }
+    if (!isEmpty(creep)) {
+        tasks = tasks.concat(getGlobalEnergyStructures().map(d => { return { action: 'transfer', destination: d }; }));
+    }
+    return closestTask(creep.pos, tasks);
+}
+
+function getTaskForCarrier(creep) {
+    let tasks = [];
+    if (!isFull(creep)) {
+        let task = getEnergySourceTask(minTransferAmount(creep), creep.pos, false, false, false);
+        if (task) tasks.push(task);
+    }
+    if (!isEmpty(creep)) {
+        tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
+    }
+    return closestTask(creep.pos, tasks);
 }
 
 function closest(pos, options) {
