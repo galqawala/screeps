@@ -355,7 +355,7 @@ function getNewDestination(creep) {
         creep.memory.action = task.action;
         return task.destination;
     } else {
-        msg(creep, 'no task for me');
+        creep.say('⏹');
     }
 }
 
