@@ -432,34 +432,6 @@ function getEnergyDestinations() {
     return targets;
 }
 
-function getEnergyDestinationTask() {
-    let targets = [];
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        let roomTargets = room.find(FIND_MY_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_TOWER && !isFull(structure);
-            }
-        }).map(d => { return { action: 'transfer', destination: d }; });
-        if (roomTargets.length < 1) {
-            roomTargets = room.find(FIND_MY_STRUCTURES, {
-                filter: (structure) => {
-                    return !isFull(structure)
-                        && (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_STORAGE)
-                        && !isDownstreamLink(structure);
-                }
-            }).map(d => { return { action: 'transfer', destination: d }; });
-        }
-        if (roomTargets.length < 1) {
-            roomTargets = getEnergyStructures(room).map(d => { return { action: 'transfer', destination: d }; });
-        }
-        targets = targets.concat(roomTargets);
-    }
-
-    return closest(targets);
-}
-
 function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = false, allowSource = false) {
     let sources = [];
 
