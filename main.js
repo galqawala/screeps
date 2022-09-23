@@ -280,7 +280,6 @@ function handleCreep(creep) {
     if (creep.memory.role === 'upgrader' || creep.memory.role === 'harvester') creep.memory.role === 'worker';
     if (creep.spawning) return;
 
-    let role = creep.memory.role;
     let destination = getDestinationFromMemory(creep);
 
     if (creep.memory.awaitingDeliveryFrom && !(Game.creeps[creep.memory.awaitingDeliveryFrom])) {
@@ -294,10 +293,7 @@ function handleCreep(creep) {
     }
 
     let actionOutcome = action(creep, destination);
-
     postAction(creep, destination, actionOutcome);
-
-    if (role === 'worker' && !useLink(creep)) orderEnergy(creep, destination);
     memorizeCreepState(creep, destination);
 
     if (destination
@@ -721,6 +717,10 @@ function getTaskForWorker(creep) {
     }
     let task = getHarvestTaskCloseby(creep.pos);
     if (task) return task;
+
+    //order more energy
+    if (!useLink(creep)) orderEnergy(creep);
+
     if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
         //fetch nearby energy
         let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
@@ -814,38 +814,11 @@ function isLinkNear(pos) {
     }).length > 0;
 }
 
-function getEnergySourceNearby(creep, maxRange = 6) {
-    let myMinTransfer = minTransferAmount(creep);
-    let destinations = creep.pos.findInRange(FIND_DROPPED_RESOURCES, maxRange)
-        .concat(creep.pos.findInRange(FIND_MY_STRUCTURES, maxRange, {
-            filter: (link) => {
-                return link.structureType === STRUCTURE_LINK && link.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
-            }
-        }))
-        .concat(creep.pos.findInRange(FIND_TOMBSTONES, maxRange, {
-            filter: (target) => {
-                return target.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
-            }
-        }));
-    if (creep.memory.role === 'worker') {
-        destinations = destinations.concat(
-            creep.pos.findInRange(FIND_MY_STRUCTURES, maxRange, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE && getEnergy(structure) >= myMinTransfer;
-                }
-            })
-        );
-    }
-    return creep.pos.findClosestByPath(destinations);
-}
-
-function orderEnergy(creep, destination) {
+function orderEnergy(creep) {
     //order energy from closest available carrier
-    if (!(destination instanceof Resource)
-        && creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransferAmount(creep)
+    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransferAmount(creep)
         && !(creep.memory.awaitingDeliveryFrom)
         && (creep.memory.timeOfLastEnergyReceived || 0) < Game.time
-        && !getEnergySourceNearby(creep)
     ) {
         let carriers = Object.values(Game.creeps).filter(function (carrier) {
             return carrier.memory.role === 'carrier' && !isEmpty(carrier) && !hasImportantTask(carrier);
