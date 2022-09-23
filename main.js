@@ -506,14 +506,17 @@ function action(creep, destination) {
         actionOutcome = creep.repair(destination);
     } else if (creep.memory.action === 'withdraw') {
         actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
+        resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action === 'transfer') {
         actionOutcome = transfer(creep, destination);
+        resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action === 'upgradeController') {
         actionOutcome = creep.upgradeController(destination);
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
+        resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action) {
         msg(creep, "action() can't handle action: " + creep.memory.action);
     } else if (destination) {
@@ -522,6 +525,15 @@ function action(creep, destination) {
 
     creep.memory.lastActionOutcome = actionOutcome;
     return actionOutcome;
+}
+
+function resetSpecificDestinationFromCreeps(destination) {
+    for (const i in Game.creeps) {
+        let anotherCreep = Game.creeps[i];
+        if (anotherCreep.memory.destination && anotherCreep.memory.destination === destination.id) {
+            resetDestination(anotherCreep);
+        }
+    }
 }
 
 function transfer(creep, destination) {
