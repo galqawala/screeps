@@ -503,61 +503,21 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
 
 function action(creep, destination) {
     let actionOutcome;
+
     if (creep.memory.action === 'repair') {
         actionOutcome = creep.repair(destination);
     } else if (creep.memory.action === 'withdraw') {
         actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
     } else if (creep.memory.action === 'transfer') {
-        actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
+        actionOutcome = transfer(creep, destination);
     } else if (creep.memory.action === 'upgradeController') {
         actionOutcome = creep.upgradeController(destination);
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
+    } else if (creep.memory.action) {
+        msg(creep, "action() can't handle action: " + creep.memory.action);
     } else if (destination) {
-        if (creep.memory.action) {
-            msg(creep, "action() can't handle action: " + creep.memory.action);
-        } else {
-            msg(creep, "action() can't handle destination: " + destination);
-        }
-        actionOutcome = actionByDestinationType(creep, destination);
-    }
-
-    creep.memory.lastActionOutcome = actionOutcome;
-    return actionOutcome;
-}
-
-function actionByDestinationType(creep, destination) {
-    //ToDo: remove
-    let actionOutcome;
-    if (destination instanceof Source) {
-        actionOutcome = creep.harvest(destination);
-    } else if (destination instanceof StructureController) {
-        actionOutcome = creep.upgradeController(destination);
-    } else if (destination instanceof ConstructionSite) {
-        actionOutcome = creep.build(destination);
-        let destinationRoomName = destination.roomName || destination.pos.roomName;
-        Memory.rooms[destinationRoomName].lastEnergyConsumingTask = destination.id;
-    } else if (destination instanceof Resource) {
-        actionOutcome = creep.pickup(destination);
-    } else if (destination instanceof Tombstone
-        || destination instanceof Ruin
-        || destination instanceof StructureContainer
-    ) {
-        actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
-        if (actionOutcome === OK) resetDestination(creep); //consider doing something else after succesfull withdraw
-    } else if (destination instanceof RoomPosition) {
-        let pathColor = hashColor(creep.memory.role);
-        actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
-    } else if (destination instanceof StructureLink || destination instanceof StructureStorage) {
-        actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
-    } else if (destination instanceof StructureSpawn
-        || destination instanceof StructureExtension
-        || destination instanceof Creep
-        || destination instanceof StructureTower
-    ) {
-        actionOutcome = transfer(creep, destination);
-    } else if (destination) {
-        msg(creep, "don't know what to do with destination: " + destination, true);
+        msg(creep, "action() can't handle destination: " + destination);
     }
 
     creep.memory.lastActionOutcome = actionOutcome;
