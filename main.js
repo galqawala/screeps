@@ -354,12 +354,21 @@ function getNewDestination(creep) {
             msg(creep, 'no task for me');
         }
     } else if (role === 'carrier') {
-        let upstream = isFull(creep) ? [] : getEnergySources(myMinTransfer); //energy sources
-        let downstream = isEmpty(creep) ? [] : getEnergyDestinations(); //energy destinations
-        let destination = closest(creep.pos, upstream.concat(downstream));
-        if (destination && destination.memory) destination.memory.awaitingDeliveryFrom = creep.name;
-        if (isDownstreamLink(destination)) creep.memory.action = 'withdraw';
-        return destination;
+        let tasks = [];
+        if (!isFull(creep)) {
+            let task = getEnergySourceTask(myMinTransfer, creep.pos, false, false, false);
+            if (task) tasks.push(task);
+        }
+        if (!isEmpty(creep)) {
+            tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
+        }
+        let task = closestTask(tasks);
+        if (task) {
+            creep.memory.action = task.action;
+            return task.destination;
+        } else {
+            msg(creep, 'no task for me');
+        }
     } else if (role === 'spawner') {
         let spawnerUpstream = isFull(creep) ? [] :
             getEnergySources(myMinTransfer, true); //energy sources
@@ -369,6 +378,150 @@ function getNewDestination(creep) {
         if (destination && destination.memory) destination.memory.awaitingDeliveryFrom = creep.name;
         return destination;
     }
+}
+
+function closest(pos, options) {
+    if (options.length < 1) return null;
+    let destination = pos.findClosestByPath(options); //same room
+    if (destination) return destination;
+    destination = randomItem(options); //another room
+    return destination;
+}
+
+function closestTask(pos, tasks) {
+    let closest = null;
+    let minRange = Number.NEGATIVE_INFINITY;
+
+    tasks.forEach(task => {
+        //this only works inside a single room
+        let range = pos.getRangeTo(task.destination);
+        if (minRange < range) {
+            minRange = range;
+            closest = task;
+        }
+    });
+
+    return closest || randomItem(tasks) /* we don't have ranges between rooms */;
+}
+
+function getEnergyDestinations() {
+    let targets = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        let roomTargets = room.find(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_TOWER && !isFull(structure);
+            }
+        });
+        if (roomTargets.length < 1) {
+            roomTargets = room.find(FIND_MY_STRUCTURES, {
+                filter: (structure) => {
+                    return !isFull(structure)
+                        && (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_STORAGE)
+                        && !isDownstreamLink(structure);
+                }
+            });
+        }
+        if (roomTargets.length < 1) {
+            roomTargets = getEnergyStructures(room);
+        }
+        targets = targets.concat(roomTargets);
+    }
+
+    return targets;
+}
+
+function getEnergyDestinationTask() {
+    let targets = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        let roomTargets = room.find(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_TOWER && !isFull(structure);
+            }
+        }).map(d => { return { action: 'transfer', destination: d }; });
+        if (roomTargets.length < 1) {
+            roomTargets = room.find(FIND_MY_STRUCTURES, {
+                filter: (structure) => {
+                    return !isFull(structure)
+                        && (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_STORAGE)
+                        && !isDownstreamLink(structure);
+                }
+            }).map(d => { return { action: 'transfer', destination: d }; });
+        }
+        if (roomTargets.length < 1) {
+            roomTargets = getEnergyStructures(room).map(d => { return { action: 'transfer', destination: d }; });
+        }
+        targets = targets.concat(roomTargets);
+    }
+
+    return closest(targets);
+}
+
+function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = false, allowSource = false) {
+    let sources = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        sources = sources
+            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
+            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
+            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
+            .concat(room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType === STRUCTURE_CONTAINER
+                        || (structure.structureType === STRUCTURE_STORAGE && allowStorage)
+                        || (structure.structureType === STRUCTURE_LINK && allowAnyLink)
+                        || isDownstreamLink(structure)
+                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
+                }
+            }));
+        if (allowSource && canHarvestInRoom(room)) {
+            sources = sources.concat(room.find(FIND_SOURCES_ACTIVE));
+        }
+    }
+
+    return sources;
+}
+
+function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLink = true, allowSource = true) {
+    let sources = [];
+
+    for (const i in Game.rooms) {
+        let room = Game.rooms[i];
+        sources = sources
+            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
+            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
+            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
+            .concat(room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType === STRUCTURE_CONTAINER
+                        || (structure.structureType === STRUCTURE_STORAGE && allowStorage)
+                        || (structure.structureType === STRUCTURE_LINK && allowAnyLink)
+                        || isDownstreamLink(structure)
+                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
+                }
+            }));
+        if (allowSource && canHarvestInRoom(room)) {
+            sources = sources.concat(getAvailableHarvestSpots(room));
+        }
+    }
+
+    let destination = closest(pos, sources);
+    if (!destination) return;
+
+    let action = 'withdraw';
+    if (destination instanceof Source) {
+        action = 'harvest';
+    } else if (destination instanceof Resource) {
+        action = 'pickup';
+    } else if (destination instanceof RoomPosition) {
+        action = 'moveTo';
+    }
+
+    return { action: action, destination: destination };
 }
 
 function action(creep, destination) {
@@ -497,73 +650,11 @@ function worthRepair(pos, structure) {
     return true;
 }
 
-function getEnergySources(myMinTransfer, allowStorage = false, allowAnyLink = false, allowSource = false) {
-    let sources = [];
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        sources = sources
-            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
-            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
-            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
-            .concat(room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_CONTAINER
-                        || (structure.structureType === STRUCTURE_STORAGE && allowStorage)
-                        || (structure.structureType === STRUCTURE_LINK && allowAnyLink)
-                        || isDownstreamLink(structure)
-                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
-                }
-            }));
-        if (allowSource && canHarvestInRoom(room)) {
-            sources = sources.concat(room.find(FIND_SOURCES_ACTIVE));
-        }
-    }
-
-    return sources;
-}
-
-function getEnergyDestinations() {
-    let targets = [];
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        let roomTargets = room.find(FIND_MY_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_TOWER && !isFull(structure);
-            }
-        });
-        if (roomTargets.length < 1) {
-            roomTargets = room.find(FIND_MY_STRUCTURES, {
-                filter: (structure) => {
-                    return !isFull(structure)
-                        && (structure.structureType === STRUCTURE_LINK || structure.structureType === STRUCTURE_STORAGE)
-                        && !isDownstreamLink(structure);
-                }
-            });
-        }
-        if (roomTargets.length < 1) {
-            roomTargets = getEnergyStructures(room);
-        }
-        targets = targets.concat(roomTargets);
-    }
-
-    return targets;
-}
-
 function isDownstreamLink(link) {
     if (link instanceof StructureLink) {
         return hasStructureInRange(link.pos, STRUCTURE_CONTROLLER, 6, false);
     }
     return false;
-}
-
-function closest(pos, options) {
-    if (options.length < 1) return null;
-    let destination = pos.findClosestByPath(options); //same room
-    if (destination) return destination;
-    destination = randomItem(options); //another room
-    return destination;
 }
 
 function getRepairTaskInRange(pos) {
@@ -632,44 +723,6 @@ function getUpgradeTask(pos, urgentOnly) {
     }
     let destination = closest(pos, targets);
     if (destination) return { action: 'upgradeController', destination: destination };
-}
-
-function getEnergySourceTask(myMinTransfer, pos) {
-    let sources = [];
-
-    for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        sources = sources
-            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
-            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
-            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
-            .concat(room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_CONTAINER
-                        || (structure.structureType === STRUCTURE_STORAGE)
-                        || (structure.structureType === STRUCTURE_LINK)
-                        || isDownstreamLink(structure)
-                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
-                }
-            }));
-        if (canHarvestInRoom(room)) {
-            sources = sources.concat(getAvailableHarvestSpots(room));
-        }
-    }
-
-    let destination = closest(pos, sources);
-    if (!destination) return;
-
-    let action = 'withdraw';
-    if (destination instanceof Source) {
-        action = 'harvest';
-    } else if (destination instanceof Resource) {
-        action = 'pickup';
-    } else if (destination instanceof RoomPosition) {
-        action = 'moveTo';
-    }
-
-    return { action: action, destination: destination };
 }
 
 function getAvailableHarvestSpots(room) {
