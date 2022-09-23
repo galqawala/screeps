@@ -816,9 +816,10 @@ function isLinkNear(pos) {
 
 function orderEnergy(creep) {
     //order energy from closest available carrier
-    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransferAmount(creep)
+    if (creep.memory.role === 'worker'
         && !(creep.memory.awaitingDeliveryFrom)
         && (creep.memory.timeOfLastEnergyReceived || 0) < Game.time
+        && creep.store.getFreeCapacity(RESOURCE_ENERGY) >= minTransferAmount(creep)
     ) {
         let carriers = Object.values(Game.creeps).filter(function (carrier) {
             return carrier.memory.role === 'carrier' && !isEmpty(carrier) && !hasImportantTask(carrier);
