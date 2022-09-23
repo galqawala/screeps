@@ -506,17 +506,17 @@ function action(creep, destination) {
         actionOutcome = creep.repair(destination);
     } else if (creep.memory.action === 'withdraw') {
         actionOutcome = creep.withdraw(destination, RESOURCE_ENERGY);
-        resetSpecificDestinationFromCreeps(destination);
+        if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action === 'transfer') {
         actionOutcome = transfer(creep, destination);
-        resetSpecificDestinationFromCreeps(destination);
+        if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action === 'upgradeController') {
         actionOutcome = creep.upgradeController(destination);
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
-        resetSpecificDestinationFromCreeps(destination);
+        if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action) {
         msg(creep, "action() can't handle action: " + creep.memory.action);
     } else if (destination) {
