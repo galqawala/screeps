@@ -355,18 +355,14 @@ function getNewDestination(creep) {
         }
     } else if (role === 'carrier') {
         let tasks = [];
-        msg(creep, 'tasks 1: ' + tasks + ' len: ' + tasks.length + ' type: ' + (typeof tasks));
         if (!isFull(creep)) {
             let task = getEnergySourceTask(myMinTransfer, creep.pos, false, false, false);
             if (task) tasks.push(task);
         }
-        msg(creep, 'tasks 2: ' + tasks + ' len: ' + tasks.length + ' type: ' + (typeof tasks));
         if (!isEmpty(creep)) {
             tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
         }
-        msg(creep, 'tasks 3: ' + tasks + ' len: ' + tasks.length + ' type: ' + (typeof tasks));
-        msg(creep, 'first object: ' + Object.entries(tasks[0]));
-        let task = closestTask(tasks);
+        let task = closestTask(creep.pos, tasks);
         if (task) {
             creep.memory.action = task.action;
             return task.destination;
