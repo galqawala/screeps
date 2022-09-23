@@ -362,7 +362,7 @@ function getNewDestination(creep) {
         if (!isEmpty(creep)) {
             tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
         }
-        msg(creep, 'tasks: ' + tasks + ' tasks len: ' + tasks.length + 'tasks type: ' + (typeof tasks));
+        msg(creep, 'tasks: ' + tasks + ' len: ' + tasks.length + ' type: ' + (typeof tasks));
         let task = closestTask(tasks);
         if (task) {
             creep.memory.action = task.action;
