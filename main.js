@@ -380,6 +380,7 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'transfer') {
         actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
     } else if (destination) {
+        msg(creep, 'no action for: ' + destination);
         actionOutcome = actionByDestinationType(creep, destination);
     }
 
@@ -388,6 +389,7 @@ function action(creep, destination) {
 }
 
 function actionByDestinationType(creep, destination) {
+    //ToDo: remove
     let actionOutcome;
     if (destination instanceof Source) {
         actionOutcome = creep.harvest(destination);
