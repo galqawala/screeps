@@ -838,6 +838,7 @@ function orderEnergy(creep) {
         });
         let carrier = creep.pos.findClosestByPath(carriers);
         if (carrier) {
+            carrier.memory.action = 'transfer';
             carrier.memory.destination = creep.id; //deliver to me
             carrier.memory.destinationSetTime = Game.time;
             creep.memory.awaitingDeliveryFrom = carrier.name; //my carrier
