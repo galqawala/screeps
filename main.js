@@ -237,8 +237,7 @@ function getDestinationFromMemory(creep) {
     let destination = creep.memory.destination;
 
     if ((!(creep.memory.empty) && isEmpty(creep)) || (!(creep.memory.full) && isFull(creep))) {
-        msg(creep, 'got full/empty');
-        destination = resetDestination(creep);
+        destination = resetDestination(creep); //replan after getting full/empty
     }
 
     if (destination) {
