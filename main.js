@@ -1,7 +1,5 @@
 /*  ToDo:
 
-loop handleCreep() until we are sure it cannot do anything else. Or atleast retry the action after moveTo()?
-
 Static harvesters. They get assigned to a specific harvest spot for their whole life. 
 They never move once reaching the spot. One harvester per source. 
 They should harvest the assigned spot or build/repair/transfer without moving.
@@ -401,6 +399,7 @@ function closestTask(pos, tasks) {
         //this only works inside a single room
         let range = pos.getRangeTo(task.destination);
         if (minRange > range) {
+            msg(pos, range + ' is closer than ' + closest + ' range: ' + range);
             minRange = range;
             closest = task;
         }
