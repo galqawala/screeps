@@ -393,7 +393,7 @@ function closest(pos, options) {
 
 function closestTask(pos, tasks) {
     let closest = null;
-    let minRange = Number.NEGATIVE_INFINITY;
+    let minRange = Number.POSITIVE_INFINITY;
 
     tasks.forEach(task => {
         //this only works inside a single room
