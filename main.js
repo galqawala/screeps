@@ -365,7 +365,7 @@ function getNewDestination(creep) {
             tasks = tasks.concat(getEnergyDestinations().map(d => { return { action: 'transfer', destination: d }; }));
         }
         msg(creep, 'tasks 3: ' + tasks + ' len: ' + tasks.length + ' type: ' + (typeof tasks));
-        msg(creep, 'first object: ' + tasks[0]);
+        msg(creep, 'first object: ' + Object.entries(tasks[0]));
         let task = closestTask(tasks);
         if (task) {
             creep.memory.action = task.action;
