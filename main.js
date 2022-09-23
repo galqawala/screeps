@@ -1303,7 +1303,6 @@ function hasImportantTask(creep) {
 }
 
 function resetDestination(creep) {
-    msg(creep, (new Error()).stack);
     creep.say('❔');
     //save last values
     creep.memory.lastDestination = creep.memory.destination;
