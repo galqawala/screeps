@@ -400,7 +400,7 @@ function closestTask(pos, tasks) {
     tasks.forEach(task => {
         //this only works inside a single room
         let range = pos.getRangeTo(task.destination);
-        if (minRange < range) {
+        if (minRange > range) {
             minRange = range;
             closest = task;
         }
