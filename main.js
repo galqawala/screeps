@@ -344,6 +344,7 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         task = getTaskForWorker(creep);
+        if (!task) msg(creep, 'nothing to do!', true);
     } else if (role === 'carrier') {
         task = getTaskForCarrier(creep);
     } else if (role === 'spawner') {
@@ -518,9 +519,9 @@ function action(creep, destination) {
         let pathColor = hashColor(creep.memory.role);
         actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     } else if (creep.memory.action) {
-        msg(creep, "action() can't handle action: " + creep.memory.action);
+        msg(creep, "action() can't handle action: " + creep.memory.action, true);
     } else if (destination) {
-        msg(creep, "action() can't handle destination: " + destination);
+        msg(creep, "action() can't handle destination: " + destination, true);
     }
 
     creep.memory.lastActionOutcome = actionOutcome;
