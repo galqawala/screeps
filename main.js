@@ -237,7 +237,7 @@ function getDestinationFromMemory(creep) {
     let destination = creep.memory.destination;
 
     if ((!(creep.memory.empty) && isEmpty(creep)) || (!(creep.memory.full) && isFull(creep))) {
-        //got full/empty -> replan destination
+        msg(creep, 'got full/empty');
         destination = resetDestination(creep);
     }
 
@@ -1302,7 +1302,6 @@ function hasImportantTask(creep) {
 }
 
 function resetDestination(creep) {
-    console.trace();
     creep.say('❔');
     //save last values
     creep.memory.lastDestination = creep.memory.destination;
