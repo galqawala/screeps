@@ -380,7 +380,11 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'transfer') {
         actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
     } else if (destination) {
-        msg(creep, 'no action for: ' + destination);
+        if (creep.memory.action) {
+            msg(creep, "action() can't handle action: " + creep.memory.action);
+        } else {
+            msg(creep, "action() can't handle destination: " + destination);
+        }
         actionOutcome = actionByDestinationType(creep, destination);
     }
 
