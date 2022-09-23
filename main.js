@@ -514,6 +514,9 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
+    } else if (creep.memory.action === 'moveTo') {
+        let pathColor = hashColor(creep.memory.role);
+        actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     } else if (creep.memory.action) {
         msg(creep, "action() can't handle action: " + creep.memory.action);
     } else if (destination) {
