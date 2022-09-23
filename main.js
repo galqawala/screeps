@@ -353,8 +353,6 @@ function getNewDestination(creep) {
     if (task) {
         creep.memory.action = task.action;
         return task.destination;
-    } else {
-        creep.say('⏹');
     }
 }
 
