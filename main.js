@@ -506,6 +506,8 @@ function action(creep, destination) {
         actionOutcome = creep.transfer(destination, RESOURCE_ENERGY);
     } else if (creep.memory.action === 'upgradeController') {
         actionOutcome = creep.upgradeController(destination);
+    } else if (creep.memory.action === 'harvest') {
+        actionOutcome = creep.harvest(destination);
     } else if (destination) {
         if (creep.memory.action) {
             msg(creep, "action() can't handle action: " + creep.memory.action);
