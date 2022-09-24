@@ -21,11 +21,20 @@ function getReservableControllers() {
     let controllers = [];
     for (const r in Game.rooms) {
         let controller = Game.rooms[r].controller;
-        if (controller && !(controller.owner)) {
-            controllers.push(controller);
-        }
+        if (!controller) continue;
+        if (controller.owner) continue;
+        if (reservationOk(controller)) continue;
+        controllers.push(controller);
     }
     return shuffle(controllers);
+}
+
+function reservationOk(controller) {
+    let reservation = controller.reservation;
+    if (!reservation) return false;
+    if (reservation.username !== Memory.username) return false;
+    if (reservation.ticksToEnd < 2500) return false;
+    return true;
 }
 
 function handleHarvester(creep) {
