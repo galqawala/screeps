@@ -12,21 +12,20 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
     if (!(Memory.username)) Memory.username = Object.values(Game.spawns)[0].owner.username;
-    for (const i in Game.creeps) handleHarvester(Game.creeps[i]) || handleCreep(Game.creeps[i]);
-    for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
-    for (const i in Game.rooms) handleRoom(Game.rooms[i]);
+    for (const c in Game.creeps) handleHarvester(Game.creeps[c]) || handleCreep(Game.creeps[c]);
+    for (const s in Game.spawns) handleSpawn(Game.spawns[s]);
+    for (const r in Game.rooms) handleRoom(Game.rooms[r]);
 };
 
 function getReservableControllers() {
-    let roomNames = shuffle(Object.keys(Game.rooms));
     let controllers = [];
-    roomNames.forEach(roomName => {
-        let controller = Game.rooms[roomName].controller;
-        if (controller && !(controller.my) && !(controller.reservation)) {
+    for (const r in Game.rooms) {
+        let controller = Game.rooms[r].controller;
+        if (controller && !(controller.owner)) {
             controllers.push(controller);
         }
-    });
-    return controllers;
+    }
+    return shuffle(controllers);
 }
 
 function handleHarvester(creep) {
