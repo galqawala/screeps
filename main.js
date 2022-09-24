@@ -529,6 +529,7 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
     if (destination instanceof Source) {
         action = 'harvest';
         Memory.harvestersNeeded = true;
+        msg(pos, "getEnergySourceTask().action == 'harvest'");
     } else if (destination instanceof Resource) {
         action = 'pickup';
     } else if (destination instanceof RoomPosition) {
