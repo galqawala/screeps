@@ -1266,6 +1266,7 @@ function spawnHarvester(spawn) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
+    msg('spawnHarvester()', 'End CPU: ' + Game.cpu.getUsed());
     return true;
 }
 
