@@ -1227,11 +1227,11 @@ function handleSpawn(spawn) {
             roleToSpawn = 'spawner';
         } else if (carriersNeeded()) {
             roleToSpawn = 'carrier';
-        } else if (Memory.reserversNeeded && getCreepCountByRole('reserver') < 1) {
-            roleToSpawn = 'reserver';
         } else if (harvestersNeeded()) {
             spawnHarvester(spawn);
             return;
+        } else if (getCreepCountByRole('reserver') < getReservableControllers().length) {
+            roleToSpawn = 'reserver';
         } else if (getCreepCountByRole('explorer') <= 0) {
             roleToSpawn = 'explorer';
             body = [MOVE];
