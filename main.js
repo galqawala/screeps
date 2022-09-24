@@ -792,7 +792,15 @@ function getRepairTask(creep) {
     return { action: 'repair', destination: destination };
 }
 
+function taskMoveRandomly(roomName) {
+    let x = Math.floor(Math.random() * 10);
+    let y = Math.floor(Math.random() * 10);
+    return { action: 'moveTo', destination: new RoomPosition(x, y, roomName) };
+}
+
 function getTaskForWorker(creep) {
+    if (creep.memory.awaitingDeliveryFrom && atEdge(creep.pos)) return taskMoveRandomly(creep.pos.roomName);
+
     if (isFull(creep)) { //spend energy without moving
         let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos);
         if (task) return task;
@@ -810,25 +818,30 @@ function getTaskForWorker(creep) {
         }
         return { action: 'moveTo', destination: getExit(creep.pos) };
     } else if (!isEmpty(creep)) {
-        //upgrade the room controller if it's about to downgrade
-        let task = getUpgradeTask(creep.pos, true);
-        //repair structures
-        if (!task) task = getRepairTask(creep);
-        //build structures
-        if (!task) {
-            let destination = closest(creep.pos, getConstructionSites(creep));
-            if (destination) task = { action: 'build', destination: destination };
+        //use energy
+        return workerUseEnergyTask(creep);
+    }
+}
+
+function workerUseEnergyTask(creep) {
+    //upgrade the room controller if it's about to downgrade
+    let task = getUpgradeTask(creep.pos, true);
+    //repair structures
+    if (!task) task = getRepairTask(creep);
+    //build structures
+    if (!task) {
+        let destination = closest(creep.pos, getConstructionSites(creep));
+        if (destination) task = { action: 'build', destination: destination };
+    }
+    //upgrade the room controller
+    if (!task) task = getUpgradeTask(creep.pos, false);
+    //return the final destination
+    if (task) {
+        if (task.destination.id) {
+            let destinationRoomName = task.destination.roomName || task.destination.pos.roomName;
+            Memory.rooms[destinationRoomName].lastEnergyConsumingTask = task.destination.id;
         }
-        //upgrade the room controller
-        if (!task) task = getUpgradeTask(creep.pos, false);
-        //return the final destination
-        if (task) {
-            if (task.destination.id) {
-                let destinationRoomName = task.destination.roomName || task.destination.pos.roomName;
-                Memory.rooms[destinationRoomName].lastEnergyConsumingTask = task.destination.id;
-            }
-            return task;
-        }
+        return task;
     }
 }
 
