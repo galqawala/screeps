@@ -589,6 +589,7 @@ function action(creep, destination) {
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
     } else if (creep.memory.action === 'moveTo') {
         let pathColor = hashColor(creep.memory.role);
+        msg(creep, 'path color: ' + pathColor);
         actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     } else if (creep.memory.action === 'build') {
         actionOutcome = creep.build(destination);
