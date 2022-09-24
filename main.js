@@ -1257,6 +1257,7 @@ function spawnHarvester(spawn) {
         if (bodyCost(newBody) > spawn.room.energyCapacityAvailable) break;
         body = newBody;
     }
+    msg('spawnHarvester()', 'After body CPU: ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
