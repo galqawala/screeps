@@ -289,20 +289,22 @@ function handleCreep(creep) {
         setDestination(creep, destination);
     }
 
-    let actionOutcome = action(creep, destination);
-    postAction(creep, destination, actionOutcome);
-    memorizeCreepState(creep, destination);
+    if (destination) {
+        let actionOutcome = action(creep, destination);
+        postAction(creep, destination, actionOutcome);
 
-    if (destination
-        && (
+        if ((
             (creep.memory.timeApproachedDestination) > (creep.memory.lastOkActionTime || 0)
             || (destination instanceof RoomPosition && creep.memory.rangeToDestination > 0)
         ) && (creep.memory.timeApproachedDestination) < (Game.time - 10)
-    ) {
-        creep.say('⌛️');
-        resetDestination(creep);
-        memorizeBlockedObject(creep, destination);
+        ) {
+            creep.say('⌛️');
+            resetDestination(creep);
+            memorizeBlockedObject(creep, destination);
+        }
     }
+
+    memorizeCreepState(creep, destination);
 }
 
 function memorizeCreepState(creep, destination) {
@@ -575,7 +577,7 @@ function postAction(creep, destination, actionOutcome) {
         } else if (actionOutcome === ERR_INVALID_TARGET) {
             creep.say('🔎');
             resetDestination(creep);
-            memorizeBlockedObject(creep, destination);
+            if (destination) memorizeBlockedObject(creep, destination);
         } else if (actionOutcome === ERR_TIRED) {
             creep.say('😓');
         } else if (actionOutcome === ERR_NOT_OWNER) {
@@ -812,7 +814,7 @@ function isBlocked(creep, target) {
 
 function memorizeBlockedObject(creep, destination) {
     if (!(creep.memory.lastBlockedIds)) creep.memory.lastBlockedIds = [];
-    if (destination.id) {
+    if (destination && destination.id) {
         creep.memory.lastBlockedIds.push(destination.id);
         if (creep.memory.lastBlockedIds.length > 1) creep.memory.lastBlockedIds.shift();
     }
