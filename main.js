@@ -1259,6 +1259,7 @@ function spawnHarvester(spawn) {
     }
     msg('spawnHarvester()', 'After body CPU: ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
+    msg('spawnHarvester()', 'After energyStructures CPU: ' + Game.cpu.getUsed());
     let name = nameForCreep(roleToSpawn);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
