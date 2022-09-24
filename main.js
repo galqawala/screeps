@@ -11,13 +11,9 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
-    msg(null, 'Before creeps CPU: ' + Game.cpu.getUsed());
     for (const i in Game.creeps) handleHarvester(Game.creeps[i]) || handleCreep(Game.creeps[i]);
-    msg(null, 'Before spawns CPU: ' + Game.cpu.getUsed());
     for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
-    msg(null, 'Before rooms CPU: ' + Game.cpu.getUsed());
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
-    msg(null, 'End CPU: ' + Game.cpu.getUsed());
 };
 
 function getReservableControllers() {
@@ -1225,7 +1221,6 @@ function handleSpawn(spawn) {
         }
         else roleToSpawn = 'worker';
 
-        msg('handleSpawn()', 'After setting roleToSpawn CPU: ' + Game.cpu.getUsed());
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
             aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
@@ -1235,7 +1230,6 @@ function handleSpawn(spawn) {
 }
 
 function spawnHarvester(spawn) {
-    msg('spawnHarvester()', 'Beginning CPU: ' + Game.cpu.getUsed());
     let roleToSpawn = 'harvester'; //no energy for workers
     let sourceFilter = { filter: (source) => { return !sourceHasHarvester(source); } };
     let sources = [];
@@ -1248,7 +1242,6 @@ function spawnHarvester(spawn) {
         Memory.reserversNeeded = getReservableControllers() >= 1;
         return false;
     }
-    msg('spawnHarvester()', 'Before workParts CPU: ' + Game.cpu.getUsed());
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
     let partsToAdd = [WORK, MOVE];
@@ -1259,9 +1252,7 @@ function spawnHarvester(spawn) {
     }
     let cost = bodyCost(body);
     if (cost > spawn.room.energyAvailable) return false;
-    msg('spawnHarvester()', 'After body CPU: ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
-    msg('spawnHarvester()', 'After energyStructures CPU: ' + Game.cpu.getUsed());
     let name = nameForCreep(roleToSpawn);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
@@ -1269,7 +1260,6 @@ function spawnHarvester(spawn) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
-    msg('spawnHarvester()', 'End CPU: ' + Game.cpu.getUsed());
     return true;
 }
 
