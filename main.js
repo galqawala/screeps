@@ -1236,11 +1236,6 @@ function handleSpawn(spawn) {
             aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
-        if (!(room.memory.roleToSpawn) || room.memory.roleToSpawn !== roleToSpawn) {
-            msg(spawn, 'Next role to spawn: ' + roleToSpawn + ', energy budget: ' + budget);
-            room.memory.roleToSpawn = roleToSpawn;
-        }
-
         if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable);
     }
 }
