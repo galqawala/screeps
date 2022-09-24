@@ -935,6 +935,7 @@ function minTransferAmount(creep) {
 }
 
 function getEnergyStructures(room, freeCap = true, sort = false) {
+    msg(room, 'getEnergyStructures() start CPU ' + Game.cpu.getUsed());
     let structures = room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION
@@ -1323,7 +1324,9 @@ function spawnHarvester(spawn) {
     }
     let cost = bodyCost(body);
     if (cost > spawn.room.energyAvailable) return false;
+    msg(spawn, 'spawnHarvester() before getEnergyStructures() CPU ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
+    msg(spawn, 'spawnHarvester() after getEnergyStructures() CPU ' + Game.cpu.getUsed());
     let name = nameForCreep(roleToSpawn);
     let harvestPos = getHarvestSpotForSource(source);
     constructContainerIfNeeded(harvestPos);
@@ -1411,7 +1414,9 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
 
         body = bodyByRatio(ratios, energyAvailable);
     }
+    msg(spawn, 'spawnCreep() before getEnergyStructures() CPU ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
+    msg(spawn, 'spawnCreep() after getEnergyStructures() CPU ' + Game.cpu.getUsed());
     let name = nameForCreep(roleToSpawn);
 
     if (spawn.spawnCreep(body, name, { memory: { role: roleToSpawn }, energyStructures: energyStructures }) === OK) {
