@@ -1281,6 +1281,7 @@ function getHarvestSpotForSource(source) {
             let pos = new RoomPosition(x, y, room.name);
             if (blockedByStructure(pos)) continue;
             let score = (hasStructureInRange(pos, STRUCTURE_LINK, 1, true) ? 1 : 0)
+                + pos.lookFor(LOOK_STRUCTURES).filter(structure => structure.structureType === STRUCTURE_CONTAINER).length
                 + pos.findInRange(FIND_SOURCES, 1).length;
             if (bestScore < score) {
                 bestScore = score;
