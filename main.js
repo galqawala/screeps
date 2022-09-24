@@ -353,14 +353,14 @@ function handleCreep(creep) {
     if (creep.spawning) return;
 
     let destination = getDestinationFromMemory(creep);
-    msg(creep, 'current destinatioN: ' + destination);
+    msg(creep, 'current destination: ' + destination);
 
     if (creep.memory.awaitingDeliveryFrom && !(Game.creeps[creep.memory.awaitingDeliveryFrom])) {
         creep.memory.awaitingDeliveryFrom = undefined; //no longer await delivery from a dead creep
     }
 
     //create a new plan if situation requires
-    if (!destination && !(creep.memory.awaitingDeliveryFrom)) {
+    if (!destination && (!(creep.memory.awaitingDeliveryFrom) || atEdge(creep.pos))) {
         destination = getNewDestination(creep);
         setDestination(creep, destination);
     }
@@ -382,6 +382,11 @@ function handleCreep(creep) {
     }
 
     memorizeCreepState(creep, destination);
+}
+
+function atEdge(pos) {
+    if (pos.x < 1 || pos.y < 1 || pos.x > 48 || pos.y > 48) return true;
+    return false;
 }
 
 function memorizeCreepState(creep, destination) {
