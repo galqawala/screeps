@@ -1223,20 +1223,18 @@ function handleSpawn(spawn) {
     //spawn creeps
     if (!(spawn.spawning)) {
         let roleToSpawn = null;
-        let budget;
 
         if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
         else if (carriersNeeded()) roleToSpawn = 'carrier';
         else if (!getEnergySourceTask(1, spawn.pos, true, true, false)) {
             spawnHarvester(spawn);
+            return;
         }
         else roleToSpawn = 'worker';
 
-        if (!budget) {
-            let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
-                aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
-            budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
-        }
+        let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
+            aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
+        let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
         if (!(room.memory.roleToSpawn) || room.memory.roleToSpawn !== roleToSpawn) {
             msg(spawn, 'Next role to spawn: ' + roleToSpawn + ', energy budget: ' + budget);
