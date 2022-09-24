@@ -20,8 +20,9 @@ function handleHarvester(creep) {
     if (creep.memory.role !== 'harvester') return false;
     if (creep.spawning) return true;
     //move
+    let destination = new RoomPosition(creep.memory.targetPos.x, creep.memory.targetPos.y, creep.memory.targetPos.roomName);
     let pathColor = hashColor(creep.memory.role);
-    creep.moveTo(creep.memory.targetPos, { visualizePathStyle: { stroke: pathColor } });
+    creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     if (!isEmpty(creep)) {
         //repair
         let repairFilter = { filter: (target) => { return target.my !== false && target.hits < target.hitsMax; } };
