@@ -20,6 +20,7 @@ function getReservableControllers() {
     let roomNames = shuffle(Object.keys(Game.rooms));
     let controllers = [];
     for (const r in roomNames) {
+        if (!(Game.rooms[r])) msg('getReservableControllers()', "Can't find room: " + r);
         let controller = Game.rooms[r].controller;
         if (!(controller)) continue;
         if (controller.my) continue;
