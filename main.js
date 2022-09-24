@@ -284,7 +284,7 @@ function handleCreep(creep) {
     }
 
     //create a new plan if situation requires
-    if (!destination) {
+    if (!destination && !(creep.memory.awaitingDeliveryFrom)) {
         destination = getNewDestination(creep);
         setDestination(creep, destination);
     }
@@ -346,7 +346,7 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         task = getTaskForWorker(creep);
-        if (!task && !(creep.memory.awaitingDeliveryFrom)) msg(creep, 'nothing to do!', true);
+        if (!task) msg(creep, 'nothing to do!', true);
     } else if (role === 'carrier') {
         task = getTaskForCarrier(creep);
     } else if (role === 'spawner') {
