@@ -772,8 +772,6 @@ function getTaskForWorker(creep) {
         let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
         if (task) return task;
     }
-    let task = getHarvestTaskCloseby(creep.pos);
-    if (task) return task;
 
     //order more energy
     if (!useLink(creep)) orderEnergy(creep);
