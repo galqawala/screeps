@@ -26,7 +26,7 @@ function handleHarvester(creep) {
     if (!isEmpty(creep)) {
         //repair
         let repairFilter = { filter: (target) => { return target.my !== false && target.hits < target.hitsMax; } };
-        let target = creep.pos.findClosestByPath(creep.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3, repairFilter));
+        let target = creep.pos.findClosestByPath(creep.pos.findInRange(FIND_STRUCTURES, 3, repairFilter));
         if (target) creep.repair(target);
         //build
         target = creep.pos.findClosestByPath(creep.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3));
