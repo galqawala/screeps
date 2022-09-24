@@ -285,6 +285,8 @@ function handleLinks(room) {
         } else {
             upstreamLink.transferEnergy(downstreamLink);
             upstreamIndex++;
+            resetSpecificDestinationFromCreeps(upstreamLink);
+            resetSpecificDestinationFromCreeps(downstreamLink);
         }
     }
 }
@@ -635,9 +637,9 @@ function action(creep, destination) {
 
 function resetSpecificDestinationFromCreeps(destination) {
     for (const i in Game.creeps) {
-        let anotherCreep = Game.creeps[i];
-        if (anotherCreep.memory.destination && anotherCreep.memory.destination === destination.id) {
-            resetDestination(anotherCreep);
+        let creep = Game.creeps[i];
+        if (creep.memory.destination && creep.memory.destination === destination.id) {
+            resetDestination(creep);
         }
     }
 }
