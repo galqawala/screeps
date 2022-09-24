@@ -1261,8 +1261,7 @@ function spawnHarvester(spawn) {
     let source = closest(spawn.pos, sources);
     if (!source) {
         Memory.harvestersNeeded = false;
-        Memory.reserversNeeded = getReservableControllers() >= 1;
-        msg(spawn, 'no sources, reservers need = ' + Memory.reserversNeeded);
+        Memory.reserversNeeded = getReservableControllers().length >= 1;
         return false;
     }
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
