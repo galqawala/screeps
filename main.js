@@ -1342,7 +1342,7 @@ function creepCost(creep) {
 function carriersNeeded() {
     if ((getEnergySources(100).length / 2) > getCreepCountByRole('carrier')) return true;
     for (const i in Game.rooms) {
-        if (Game.rooms[i].find(FIND_MY_STRUCTURES, {
+        if (Game.rooms[i].find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType === STRUCTURE_CONTAINER) && isFull(structure);
             }
