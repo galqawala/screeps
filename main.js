@@ -1214,7 +1214,7 @@ function handleSpawn(spawn) {
             roleToSpawn = 'carrier';
         } else if (Memory.reserversNeeded && getCreepCountByRole('reserver') < 1) {
             roleToSpawn = 'reserver';
-        } else if (Memory.harvestersNeeded) {
+        } else if (harvestersNeeded()) {
             spawnHarvester(spawn);
             return;
         }
@@ -1226,6 +1226,20 @@ function handleSpawn(spawn) {
 
         if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable);
     }
+}
+
+function harvestersNeeded() {
+    if (Memory.harvestersNeeded) return true;
+
+    for (const i in Game.rooms) {
+        if (Game.rooms[i].find(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType === STRUCTURE_STORAGE) && isEmpty(structure);
+            }
+        }).length >= 1) return true;
+    }
+
+    return false;
 }
 
 function spawnHarvester(spawn) {
