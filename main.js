@@ -1225,6 +1225,7 @@ function handleSpawn(spawn) {
         }
         else roleToSpawn = 'worker';
 
+        msg('handleSpawn()', 'After setting roleToSpawn CPU: ' + Game.cpu.getUsed());
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
             aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
