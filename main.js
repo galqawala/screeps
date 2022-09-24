@@ -1,12 +1,5 @@
 /*  ToDo:
 
-Static harvesters. They get assigned to a specific harvest spot for their whole life. 
-They never move once reaching the spot. One harvester per source. 
-They should harvest the assigned spot or build/repair/transfer without moving.
-If I create a creep with this many work parts:
-`Game.getObjectById('5bbcad4b9099fc012e6370ef').energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER`
-, I could have it at the source all the time and it will harvest as fast as the source regenerates? That should be efficient?
-
 use TypeScript to avoid mistakes like: let foo=[]; foo+=1; (1)
     https://github.com/screepers/screeps-typescript-starter
 */
@@ -535,6 +528,7 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
     let action = 'withdraw';
     if (destination instanceof Source) {
         action = 'harvest';
+        Memory.harvestersNeeded = true;
     } else if (destination instanceof Resource) {
         action = 'pickup';
     } else if (destination instanceof RoomPosition) {
@@ -1226,7 +1220,7 @@ function handleSpawn(spawn) {
 
         if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
         else if (carriersNeeded()) roleToSpawn = 'carrier';
-        else if (!getEnergySourceTask(1, spawn.pos, true, true, false)) {
+        else if (Memory.harvestersNeeded) {
             spawnHarvester(spawn);
             return;
         }
@@ -1258,6 +1252,7 @@ function spawnHarvester(spawn) {
     let name = nameForCreep(roleToSpawn);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
+        Memory.harvestersNeeded = false;
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
