@@ -1324,10 +1324,10 @@ function spawnHarvester(spawn) {
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
     let harvestPos = getHarvestSpotForSource(source);
-    let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
     if (harvestPos.lookFor(LOOK_STRUCTURES).length + harvestPos.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0) {
         harvestPos.createConstructionSite(STRUCTURE_CONTAINER);
     }
+    let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         Memory.harvestersNeeded = false;
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
