@@ -1336,7 +1336,6 @@ function getSourceToHarvest(pos) {
 }
 
 function spawnHarvester(spawn) {
-    msg(spawn, 'tryin to spawn a harvester');
     let roleToSpawn = 'harvester'; //no energy for workers
     let source = getSourceToHarvest(spawn.pos);
     if (!source) return;
