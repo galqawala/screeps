@@ -404,7 +404,6 @@ function getNewDestination(creep) {
         task = getTaskForSpawner(creep);
     } else if (role === 'reserver') {
         let destination = closest(creep.pos, getReservableControllers());
-        msg(creep, 'closest: ' + destination);
         if (destination) task = { action: 'reserveController', destination: destination };
     } else if (role === 'explorer') {
         let destination = getExit(creep.pos);
