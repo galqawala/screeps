@@ -346,7 +346,7 @@ function getNewDestination(creep) {
 
     if (role === 'worker') {
         task = getTaskForWorker(creep);
-        if (!task) msg(creep, 'nothing to do!', true);
+        if (!task && !(creep.memory.awaitingDeliveryFrom)) msg(creep, 'nothing to do!', true);
     } else if (role === 'carrier') {
         task = getTaskForCarrier(creep);
     } else if (role === 'spawner') {
