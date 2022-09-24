@@ -1340,7 +1340,15 @@ function creepCost(creep) {
 }
 
 function carriersNeeded() {
-    return (getEnergySources(100).length / 2) > getCreepCountByRole('carrier');
+    if ((getEnergySources(100).length / 2) > getCreepCountByRole('carrier')) return true;
+    for (const i in Game.rooms) {
+        if (Game.rooms[i].find(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType === STRUCTURE_CONTAINER) && isFull(structure);
+            }
+        }).length >= 1) return true;
+    }
+    return false;
 }
 
 function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
