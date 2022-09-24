@@ -580,6 +580,7 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
         Memory.harvestersNeeded = true; //we need dedicated harvesters
+        msg(creep, 'we need harvesters: ' + Memory.harvestersNeeded);
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
