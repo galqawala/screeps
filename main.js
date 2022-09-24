@@ -961,13 +961,9 @@ function isRoomSafe(roomName, currentRoomName) {
 }
 
 function getExit(pos) {
-    /*
-    [15:25:22][shard3]41913903 [room E6S42 pos 49,33]: accessibleRooms:  for exits 3,E7S42,5,E6S43,7,E5S42
-    */
     let exits = Game.map.describeExits(pos.roomName);
     let accessibleRooms = Object.values(exits).filter(roomName =>
         isRoomSafe(roomName, pos.roomName) && Memory.rooms[roomName].canHarvest);
-    msg(pos, 'accessibleRooms: ' + accessibleRooms + ' for exits ' + Object.entries(exits));
     let destinationRoomName = randomItem(accessibleRooms);
     let findExit = Game.map.findExit(pos.roomName, destinationRoomName);
     if (findExit === ERR_NO_PATH) {
