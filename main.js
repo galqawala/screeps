@@ -1250,6 +1250,9 @@ function spawnHarvester(spawn) {
         if (bodyCost(newBody) > spawn.room.energyCapacityAvailable) break;
         body = newBody;
     }
+    if (bodyCost(body) > spawn.room.energyAvailable && getCreepCountByRole(roleToSpawn) < 1) {
+        body = body.filter(onlyUnique);
+    }
     let cost = bodyCost(body);
     if (cost > spawn.room.energyAvailable) return false;
     let energyStructures = getEnergyStructures(spawn.room, false, true);
