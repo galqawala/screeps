@@ -673,43 +673,6 @@ function getBuildTaskInRange(pos) {
     }
 }
 
-function getTransferTaskInRange(pos) {
-    let sources = pos.findInRange(FIND_SOURCES_ACTIVE, 1);
-    if (sources.length < 1) {
-        return; //no need to transfer
-    }
-
-    let destination = pos.findClosestByPath( //link
-        pos.findInRange(FIND_STRUCTURES, 1, {
-            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === STRUCTURE_LINK; }
-        })
-    );
-    if (!destination) {
-        destination = pos.findClosestByPath( //carrier
-            pos.findInRange(FIND_CREEPS, 1, {
-                filter: (target) => { return !isFull(target) && target.my !== false && target.memory.role === 'carrier'; }
-            })
-        );
-    }
-    if (!destination) {
-        destination = pos.findClosestByPath( //any structure
-            pos.findInRange(FIND_STRUCTURES, 1, {
-                filter: (target) => { return !isFull(target) && target.my !== false; }
-            })
-        );
-    }
-    if (destination && pos.getRangeTo(destination) <= 1) {
-        return { action: 'transfer', destination: destination };
-    }
-}
-
-function getHarvestTaskCloseby(pos) {
-    let destination = pos.findClosestByPath(pos.findInRange(FIND_SOURCES_ACTIVE, 2));
-    if (destination) {
-        return { action: 'harvest', destination: destination };
-    }
-}
-
 function getUpgradeTask(pos, urgentOnly) {
     let targets = [];
     for (const i in Game.rooms) {
@@ -769,7 +732,7 @@ function getRepairTask(creep) {
 
 function getTaskForWorker(creep) {
     if (isFull(creep)) { //spend energy without moving
-        let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos) || getTransferTaskInRange(creep.pos);
+        let task = getRepairTaskInRange(creep.pos) || getBuildTaskInRange(creep.pos);
         if (task) return task;
     }
 
