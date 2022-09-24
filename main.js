@@ -16,6 +16,19 @@ module.exports.loop = function () {
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
 };
 
+function getReservableControllers() {
+    let roomNames = shuffle(Object.keys(Game.rooms));
+    let controllers = [];
+    for (const r in roomNames) {
+        let controller = Game.rooms[r].controller;
+        if (!(controller)) continue;
+        if (controller.my) continue;
+        if (controller.reservation) continue;
+        controllers.push(controller);
+    }
+    return controllers;
+}
+
 function handleHarvester(creep) {
     if (creep.memory.role !== 'harvester') return false;
     if (creep.spawning) return true;
@@ -390,6 +403,9 @@ function getNewDestination(creep) {
         task = getTaskForCarrier(creep);
     } else if (role === 'spawner') {
         task = getTaskForSpawner(creep);
+    } else if (role === 'reserver') {
+        let destination = closest(getReservableControllers());
+        if (destination) task = { action: 'reserveController', destination: destination };
     }
 
     if (task) {
@@ -562,6 +578,8 @@ function action(creep, destination) {
         actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
     } else if (creep.memory.action === 'build') {
         actionOutcome = creep.build(destination);
+    } else if (creep.memory.action === 'reserveController') {
+        actionOutcome = creep.reserveController(destination);
     } else if (creep.memory.action) {
         msg(creep, "action() can't handle action: " + creep.memory.action, true);
     } else if (destination) {
@@ -1180,9 +1198,13 @@ function handleSpawn(spawn) {
     if (!(spawn.spawning)) {
         let roleToSpawn = null;
 
-        if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
-        else if (carriersNeeded()) roleToSpawn = 'carrier';
-        else if (Memory.harvestersNeeded) {
+        if (getCreepCountByRole('spawner') <= 0) {
+            roleToSpawn = 'spawner';
+        } else if (carriersNeeded()) {
+            roleToSpawn = 'carrier';
+        } else if (Memory.reserversNeeded && getCreepCountByRole('reserver') < 1) {
+            roleToSpawn = 'reserver';
+        } else if (Memory.harvestersNeeded) {
             spawnHarvester(spawn);
             return;
         }
@@ -1206,6 +1228,7 @@ function spawnHarvester(spawn) {
     let source = closest(spawn.pos, sources);
     if (!source) {
         Memory.harvestersNeeded = false;
+        Memory.reserversNeeded = getReservableControllers() >= 1;
         return false;
     }
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
@@ -1281,6 +1304,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable) {
     let ratios;
     if (roleToSpawn === 'worker') ratios = { move: 4, work: 3, carry: 1 };
     else if (roleToSpawn === 'carrier' || roleToSpawn === 'spawner') ratios = { move: 1, carry: 1 };
+    else if (roleToSpawn === 'reserver') ratios = { move: 1, claim: 1 };
 
     let body = bodyByRatio(ratios, energyAvailable);
     let energyStructures = getEnergyStructures(spawn.room, false, true);
