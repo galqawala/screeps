@@ -353,7 +353,6 @@ function handleCreep(creep) {
     if (creep.spawning) return;
 
     let destination = getDestinationFromMemory(creep);
-    msg(creep, 'current destination: ' + destination);
 
     if (creep.memory.awaitingDeliveryFrom && !(Game.creeps[creep.memory.awaitingDeliveryFrom])) {
         creep.memory.awaitingDeliveryFrom = undefined; //no longer await delivery from a dead creep
