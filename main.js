@@ -381,7 +381,7 @@ function handleCreep(creep) {
         if ((
             (creep.memory.timeApproachedDestination) > (creep.memory.lastOkActionTime || 0)
             || (destination instanceof RoomPosition && creep.memory.rangeToDestination > 0)
-        ) && (creep.memory.timeApproachedDestination) < (Game.time - 10)
+        ) && (creep.memory.timeApproachedDestination) < (Game.time - 20)
         ) {
             msg(creep, 'timeout! time: ' + Game.time + ' timeApproachedDestination: ' + creep.memory.timeApproachedDestination);
             creep.say('⌛️');
