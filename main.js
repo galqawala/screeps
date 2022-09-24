@@ -1288,7 +1288,7 @@ function handleSpawn(spawn) {
             roleToSpawn = 'spawner';
         } else if (carriersNeeded()) {
             roleToSpawn = 'carrier';
-        } else if (harvestersNeeded()) {
+        } else if (harvestersNeeded(spawn.pos)) {
             spawnHarvester(spawn);
             return;
         } else if (getCreepCountByRole('reserver') < getReservableControllers().length) {
@@ -1310,7 +1310,9 @@ function handleSpawn(spawn) {
     }
 }
 
-function harvestersNeeded() {
+function harvestersNeeded(pos) {
+    if (!getSourceToHarvest(pos)) return false; //nothing to harvest
+
     if (Memory.harvestersNeeded) return true;
 
     for (const i in Game.rooms) {
@@ -1324,20 +1326,20 @@ function harvestersNeeded() {
     return false;
 }
 
-function spawnHarvester(spawn) {
-    msg(spawn, 'tryin to spawn a harvester');
-    let roleToSpawn = 'harvester'; //no energy for workers
+function getSourceToHarvest(pos) {
     let sourceFilter = { filter: (source) => { return !sourceHasHarvester(source); } };
     let sources = [];
     for (const r in Game.rooms) {
         sources = sources.concat(Game.rooms[r].find(FIND_SOURCES, sourceFilter));
     }
-    let source = closest(spawn.pos, sources);
-    if (!source) {
-        Memory.harvestersNeeded = false;
-        Memory.reserversNeeded = getReservableControllers().length >= 1;
-        return false;
-    }
+    return closest(pos, sources);
+}
+
+function spawnHarvester(spawn) {
+    msg(spawn, 'tryin to spawn a harvester');
+    let roleToSpawn = 'harvester'; //no energy for workers
+    let source = getSourceToHarvest(spawn.pos);
+    if (!source) return;
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
     let partsToAdd = [WORK, MOVE];
