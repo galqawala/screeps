@@ -772,7 +772,8 @@ function getTaskForWorker(creep) {
 
     if (isEmpty(creep) && !(creep.memory.awaitingDeliveryFrom)) {
         //fetch nearby energy
-        let task = getEnergySourceTask(minTransferAmount(creep), creep.pos);
+        let allowSource = getCreepCountByRole('harvester') < 1;
+        let task = getEnergySourceTask(minTransferAmount(creep), creep.pos, true, true, allowSource);
         if (task) {
             return task;
         }
