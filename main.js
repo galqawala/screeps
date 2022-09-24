@@ -637,6 +637,7 @@ function postAction(creep, destination, actionOutcome) {
     } else {
         if (actionOutcome === ERR_NOT_IN_RANGE) {
             let pathColor = hashColor(creep.memory.role);
+            msg(creep, 'ERR_NOT_IN_RANGE path color: ' + pathColor);
             creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
         } else if (actionOutcome === ERR_FULL) {
             resetDestination(creep);
