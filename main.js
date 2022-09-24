@@ -191,7 +191,6 @@ function handleRoom(room) {
     //energy spent
     let energy = room.energyAvailable;
     if (room.memory.energyAvailable > energy) {
-        msg(room, 'energy: ' + room.memory.energyAvailable + ' ➤ ' + energy);
         tryResetSpawnsAndExtensionsSorting(room);
     }
     room.memory.energyAvailable = energy;
