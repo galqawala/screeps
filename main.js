@@ -1301,6 +1301,7 @@ function handleSpawn(spawn) {
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
         if (room.energyAvailable >= budget) {
+            msg(spawn, 'spawning: ' + roleToSpawn);
             spawnCreep(spawn, roleToSpawn, room.energyAvailable, body);
         }
     }
@@ -1351,6 +1352,7 @@ function spawnHarvester(spawn) {
     let harvestPos = getHarvestSpotForSource(source);
     constructContainerIfNeeded(harvestPos);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
+    msg(spawn, 'spawning: ' + roleToSpawn);
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         Memory.harvestersNeeded = false;
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
