@@ -164,7 +164,7 @@ function handleRoom(room) {
     handleHostilesInRoom(room);
 
     //construct structures
-    const structureTypes = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_LINK, STRUCTURE_STORAGE, STRUCTURE_CONTAINER];
+    const structureTypes = [STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_LINK, STRUCTURE_STORAGE];
     structureTypes.forEach(structureType => construct(room, structureType));
 
     //handle links
@@ -1323,7 +1323,11 @@ function spawnHarvester(spawn) {
     if (cost > spawn.room.energyAvailable) return false;
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
-    let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
+    let harvestPos = getHarvestSpotForSource(source);
+    let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
+    if (harvestPos.lookFor(LOOK_STRUCTURES).length + harvestPos.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0) {
+        harvestPos.createConstructionSite(STRUCTURE_CONTAINER);
+    }
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         Memory.harvestersNeeded = false;
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
