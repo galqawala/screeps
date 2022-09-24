@@ -940,23 +940,18 @@ function minTransferAmount(creep) {
     return creep.store.getCapacity(RESOURCE_ENERGY) / 10;
 }
 
-function getEnergyStructures(room, freeCap = true, sort = false) {
-    msg(room, 'getEnergyStructures() start CPU ' + Game.cpu.getUsed());
-    let structures = room.find(FIND_STRUCTURES, {
+function getSpawnsAndExtensionsFiFo(room) {
+    return room.memory.spawnStructureIdsFiFo.map(id => Game.getObjectById(id));
+}
+
+function getEnergyStructures(room) {
+    return room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION
                 || structure.structureType === STRUCTURE_SPAWN
-            ) && (!freeCap || !isFull(structure));
+            ) && !isFull(structure);
         }
     });
-
-    if (sort) {
-        return structures.sort(function (x, y) {
-            return rangeToSource(x.pos) - rangeToSource(y.pos);
-        });
-    } else {
-        return structures;
-    }
 }
 
 function getGlobalEnergyStructures() {
@@ -974,10 +969,6 @@ function getGlobalEnergyStructures() {
         );
     }
     return structures;
-}
-
-function rangeToSource(pos) {
-    return pos.getRangeTo(pos.findClosestByPath(FIND_SOURCES));
 }
 
 function shuffle(unshuffled) {
@@ -1330,9 +1321,7 @@ function spawnHarvester(spawn) {
     }
     let cost = bodyCost(body);
     if (cost > spawn.room.energyAvailable) return false;
-    msg(spawn, 'spawnHarvester() before getEnergyStructures() CPU ' + Game.cpu.getUsed());
-    let energyStructures = getEnergyStructures(spawn.room, false, true);
-    msg(spawn, 'spawnHarvester() after getEnergyStructures() CPU ' + Game.cpu.getUsed());
+    let energyStructures = getSpawnsAndExtensionsFiFo(spawn.room);
     let name = nameForCreep(roleToSpawn);
     let harvestPos = getHarvestSpotForSource(source);
     constructContainerIfNeeded(harvestPos);
@@ -1420,9 +1409,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
 
         body = bodyByRatio(ratios, energyAvailable);
     }
-    msg(spawn, 'spawnCreep() before getEnergyStructures() CPU ' + Game.cpu.getUsed());
-    let energyStructures = getEnergyStructures(spawn.room, false, true);
-    msg(spawn, 'spawnCreep() after getEnergyStructures() CPU ' + Game.cpu.getUsed());
+    let energyStructures = getSpawnsAndExtensionsFiFo(spawn.room);
     let name = nameForCreep(roleToSpawn);
 
     if (bodyCost(body) > spawn.room.energyAvailable) {
