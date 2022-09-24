@@ -1249,9 +1249,11 @@ function spawnHarvester(spawn) {
     }
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
+    let partsToAdd = [WORK, MOVE];
     for (let x = 1; x <= workParts; x++) {
-        if (bodyCost(body) + bodyCost([WORK]) > spawn.room.energyCapacityAvailable) break;
-        body.push(WORK);
+        let newBody = body.concat(partsToAdd);
+        if (bodyCost(newBody) > spawn.room.energyCapacityAvailable) break;
+        body = newBody;
     }
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
