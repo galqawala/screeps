@@ -1215,11 +1215,37 @@ function spawnHarvester(spawn) {
     }
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
-    let memory = { role: roleToSpawn, sourceId: source.id };
+    let memory = { role: roleToSpawn, sourceId: source.id, targetPos: getHarvestSpotForSource(source) };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
+}
+
+function getHarvestSpotForSource(source) {
+    let room = Game.rooms[source.pos.roomName];
+    let bestSpot;
+    let bestScore = Number.NEGATIVE_INFINITY;
+    let targetPos = source.pos;
+    let range = 1;
+    const terrain = new Room.Terrain(room.name);
+
+    for (let x = targetPos.x - range; x <= targetPos.x + range; x++) {
+        for (let y = targetPos.y - range; y <= targetPos.y + range; y++) {
+            if (x === targetPos.x && y === targetPos.y) continue;
+            if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
+            let pos = new RoomPosition(x, y, room.name);
+            if (blockedByStructure(pos)) continue;
+            let score = (hasStructureInRange(pos, STRUCTURE_LINK, 1, true) ? 1 : 0)
+                + pos.findInRange(FIND_SOURCES, 1).length;
+            if (bestScore < score) {
+                bestScore = score;
+                bestSpot = pos;
+            }
+        }
+    }
+
+    return bestSpot;
 }
 
 function sourceHasHarvester(source) {
