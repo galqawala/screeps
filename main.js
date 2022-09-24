@@ -1305,7 +1305,6 @@ function handleSpawn(spawn) {
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
         if (room.energyAvailable >= budget) {
-            msg(spawn, 'spawning: ' + roleToSpawn);
             spawnCreep(spawn, roleToSpawn, room.energyAvailable, body);
         }
     }
@@ -1356,7 +1355,6 @@ function spawnHarvester(spawn) {
     let harvestPos = getHarvestSpotForSource(source);
     constructContainerIfNeeded(harvestPos);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
-    msg(spawn, 'spawning: ' + roleToSpawn);
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         Memory.harvestersNeeded = false;
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
@@ -1441,16 +1439,10 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
         body = bodyByRatio(ratios, energyAvailable);
     }
     let energyStructures = getSpawnsAndExtensionsSorted(spawn.room);
-    msg(spawn, 'energyStructures: ' + energyStructures.length + ' >> ' + energyStructures);
     let name = nameForCreep(roleToSpawn);
 
-    if (bodyCost(body) > spawn.room.energyAvailable) {
-        msg(spawn, "can't afford: " + bodyCost(body) + ' > ' + spawn.room.energyAvailable);
-        return;
-    }
+    if (bodyCost(body) > spawn.room.energyAvailable) return;
 
-    msg(spawn, 'Trying to spawn: ' + roleToSpawn + ' (' + name + '), cost: '
-        + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     if (spawn.spawnCreep(body, name, { memory: { role: roleToSpawn }, energyStructures: energyStructures }) === OK) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
