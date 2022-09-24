@@ -11,10 +11,33 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
-    if (!(Memory.username)) Memory.username = Object.values(Game.spawns)[0].owner.username;
+    if (!(Memory.username)) setUsername();
     for (const c in Game.creeps) handleHarvester(Game.creeps[c]) || handleCreep(Game.creeps[c]);
     for (const s in Game.spawns) handleSpawn(Game.spawns[s]);
     for (const r in Game.rooms) handleRoom(Game.rooms[r]);
+};
+
+const setUsername = function () {
+    //room controllers
+    for (const r in Game.rooms) {
+        let room = Game.rooms(r);
+        if (room.controller && room.controller.my) {
+            Memory.username = room.controller.owner.username;
+            return;
+        }
+    }
+    //creeps
+    const creeps = Object.values(Game.creeps);
+    if (creeps.length) {
+        Memory.username = creeps[0].owner.username;
+        return;
+    }
+    //structures
+    const structures = Object.values(Game.structures);
+    if (structures.length) {
+        Memory.username = structures[0].owner.username;
+        return;
+    }
 };
 
 function getReservableControllers() {
