@@ -1430,7 +1430,7 @@ function msg(context, msg, email = false) {
 
 function nameForCreep(role) {
     let characters = 'ABCDEFGHJKLMNPQRTUVWXYZ2346789';
-    let name = role.substring(0, 1);
+    let name = role.substring(0, 1).toUpperCase();
     while (Game.creeps[name]) {
         name += characters.charAt(Math.floor(Math.random() * characters.length));
     }
