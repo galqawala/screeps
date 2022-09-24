@@ -528,8 +528,6 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
     let action = 'withdraw';
     if (destination instanceof Source) {
         action = 'harvest';
-        Memory.harvestersNeeded = true;
-        msg(pos, "getEnergySourceTask().action == 'harvest'");
     } else if (destination instanceof Resource) {
         action = 'pickup';
     } else if (destination instanceof RoomPosition) {
@@ -554,8 +552,7 @@ function action(creep, destination) {
         actionOutcome = creep.upgradeController(destination);
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
-        Memory.harvestersNeeded = true;
-        msg(creep, 'harvesting');
+        Memory.harvestersNeeded = true; //we need dedicated harvesters
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
