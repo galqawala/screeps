@@ -1202,7 +1202,11 @@ function handleSpawn(spawn) {
 function spawnHarvester(spawn) {
     let roleToSpawn = 'harvester'; //no energy for workers
     let sourceFilter = { filter: (source) => { return !sourceHasHarvester(source); } };
-    let source = spawn.pos.findClosestByPath(FIND_SOURCES, sourceFilter);
+    let sources = [];
+    for (const r in Game.rooms) {
+        sources = sources.concat(Game.rooms[r].find(FIND_SOURCES, sourceFilter));
+    }
+    let source = closest(spawn.pos, sources);
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
     for (let x = 1; x <= workParts; x++) {
