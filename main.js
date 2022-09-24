@@ -336,14 +336,6 @@ function getDestinationFromMemory(creep) {
             }
         }
 
-        if (destination instanceof RoomPosition && creep.room.name !== destination.roomName
-            && (destination.x === 0 || destination.x === 49 || destination.y === 0 || destination.y === 49)
-        ) {
-            //successfully arrived to another room
-            creep.say('🌐');
-            destination = resetDestination(creep);
-        }
-
         if (creep.memory.action === 'repair' && !needsRepair(destination)) destination = resetDestination(creep);
 
         if (destination && creep.pos.roomName !== creep.memory.roomName
