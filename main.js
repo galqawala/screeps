@@ -1452,14 +1452,21 @@ function construct(room, structureType) {
     if (needStructure(room, structureType)) {
         let pos = getPosForConstruction(room, structureType);
         if (!pos) return;
-        msg(room, 'Creating a construction site for ' + structureType + ' at ' + pos, true);
         pos.lookFor(LOOK_STRUCTURES).forEach(structure => {
             if (structure instanceof StructureExtension) {
-                msg(structure, 'destroying to make space for: ' + structureType);
+                msg(structure, 'Destroying to make space for: ' + structureType);
                 structure.destroy();
             }
         });
+        msg(room, 'Creating a construction site for ' + structureType + ' at ' + pos, true);
         pos.createConstructionSite(structureType);
+        if (structureType === STRUCTURE_LINK) {
+            let filter = { filter: (target) => { return target.structureType === STRUCTURE_CONTAINER; } };
+            pos.findInRange(FIND_STRUCTURES, 1, filter).forEach(structure => {
+                msg(structure, 'Destroying around new ' + structureType);
+                structure.destroy();
+            });
+        }
     }
 }
 
