@@ -554,6 +554,8 @@ function action(creep, destination) {
         actionOutcome = creep.upgradeController(destination);
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
+        Memory.harvestersNeeded = true;
+        msg(creep, 'harvesting');
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
