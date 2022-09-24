@@ -1234,7 +1234,7 @@ function harvestersNeeded() {
     for (const i in Game.rooms) {
         if (Game.rooms[i].find(FIND_MY_STRUCTURES, {
             filter: (structure) => {
-                return (structure.structureType === STRUCTURE_STORAGE) && isEmpty(structure);
+                return (structure.structureType === STRUCTURE_STORAGE) && getEnergy(structure) < 1000;
             }
         }).length >= 1) return true;
     }
