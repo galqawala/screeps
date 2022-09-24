@@ -274,7 +274,6 @@ function getDestinationFromMemory(creep) {
 }
 
 function handleCreep(creep) {
-    if (creep.memory.role === 'upgrader' || creep.memory.role === 'harvester') creep.memory.role === 'worker';
     if (creep.spawning) return;
 
     let destination = getDestinationFromMemory(creep);
@@ -1176,14 +1175,20 @@ function handleSpawn(spawn) {
     //spawn creeps
     if (!(spawn.spawning)) {
         let roleToSpawn = null;
+        let budget;
 
         if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
         else if (carriersNeeded()) roleToSpawn = 'carrier';
+        else if (!getEnergySourceTask(1, spawn.pos)) {
+            spawnHarvester();
+        }
         else roleToSpawn = 'worker';
 
-        let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
-            aggregated + (item.memory.role === roleToSpawn ? bodyCost(item.body.map(part => part.type)) : 0), 0 /*initial*/) || 0;
-        let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
+        if (!budget) {
+            let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
+                aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
+            budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
+        }
 
         if (!(room.memory.roleToSpawn) || room.memory.roleToSpawn !== roleToSpawn) {
             msg(spawn, 'Next role to spawn: ' + roleToSpawn + ', energy budget: ' + budget);
@@ -1192,6 +1197,39 @@ function handleSpawn(spawn) {
 
         if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable);
     }
+}
+
+function spawnHarvester(spawn) {
+    let roleToSpawn = 'harvester'; //no energy for workers
+    let sourceFilter = { filter: (source) => { return !sourceHasHarvester(source); } };
+    let source = spawn.pos.findClosestByPath(FIND_SOURCES, sourceFilter);
+    let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
+    let body = [CARRY, MOVE];
+    for (let x = 1; x <= workParts; x++) {
+        if (bodyCost(body) + bodyCost([WORK]) > spawn.room.energyCapacityAvailable) break;
+        body.push(WORK);
+    }
+    let energyStructures = getEnergyStructures(spawn.room, false, true);
+    let name = nameForCreep(roleToSpawn);
+    let memory = { role: roleToSpawn, sourceId: source.id };
+    if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
+        msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
+            + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
+    }
+}
+
+function sourceHasHarvester(source) {
+    for (const i in Game.creeps) {
+        let creep = Game.creeps[i];
+        if (creep.memory.sourceId === source.id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function creepCost(creep) {
+    return bodyCost(creep.body.map(part => part.type));
 }
 
 function carriersNeeded() {
