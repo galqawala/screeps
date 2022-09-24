@@ -1257,6 +1257,8 @@ function spawnHarvester(spawn) {
         if (bodyCost(newBody) > spawn.room.energyCapacityAvailable) break;
         body = newBody;
     }
+    let cost = bodyCost(body);
+    if (cost > spawn.room.energyAvailable) return false;
     msg('spawnHarvester()', 'After body CPU: ' + Game.cpu.getUsed());
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     msg('spawnHarvester()', 'After energyStructures CPU: ' + Game.cpu.getUsed());
