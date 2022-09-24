@@ -1251,7 +1251,6 @@ function harvestersNeeded() {
 }
 
 function spawnHarvester(spawn) {
-    msg(spawn, 'trying to spawn a harvester');
     let roleToSpawn = 'harvester'; //no energy for workers
     let sourceFilter = { filter: (source) => { return !sourceHasHarvester(source); } };
     let sources = [];
