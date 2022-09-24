@@ -965,7 +965,7 @@ function getExit(pos) {
     let exits = Game.map.describeExits(pos.roomName);
     let accessibleRooms = Object.values(exits).filter(roomName =>
         isRoomSafe(roomName, pos.roomName) && Memory.rooms[roomName].canHarvest);
-    msg(pos, 'accessibleRooms: ' + accessibleRooms + ' for exits ' + exits);
+    msg(pos, 'accessibleRooms: ' + accessibleRooms + ' for exits ' + Object.entries(exits));
     let destinationRoomName = randomItem(accessibleRooms);
     let findExit = Game.map.findExit(pos.roomName, destinationRoomName);
     if (findExit === ERR_NO_PATH) {
