@@ -1444,6 +1444,8 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
         return;
     }
 
+    msg(spawn, 'Trying to spawn: ' + roleToSpawn + ' (' + name + '), cost: '
+        + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     if (spawn.spawnCreep(body, name, { memory: { role: roleToSpawn }, energyStructures: energyStructures }) === OK) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
