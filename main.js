@@ -1419,6 +1419,11 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
     msg(spawn, 'spawnCreep() after getEnergyStructures() CPU ' + Game.cpu.getUsed());
     let name = nameForCreep(roleToSpawn);
 
+    if (bodyCost(body) > spawn.room.energyAvailable) {
+        msg(spawn, "can't afford: " + bodyCost(body) + ' > ' + spawn.room.energyAvailable);
+        return;
+    }
+
     if (spawn.spawnCreep(body, name, { memory: { role: roleToSpawn }, energyStructures: energyStructures }) === OK) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + energyAvailable + '/' + spawn.room.energyCapacityAvailable);
