@@ -441,8 +441,6 @@ function getNewDestination(creep) {
         if (destination) task = { action: 'moveTo', destination: destination };
     }
 
-    msg(creep, 'task: ' + Object.entries(task));
-
     if (task) {
         creep.memory.action = task.action;
         return task.destination;
