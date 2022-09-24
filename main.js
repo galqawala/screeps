@@ -1437,6 +1437,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
         body = bodyByRatio(ratios, energyAvailable);
     }
     let energyStructures = getSpawnsAndExtensionsSorted(spawn.room);
+    msg(spawn, 'energyStructures: ' + energyStructures.length + ' >> ' + energyStructures);
     let name = nameForCreep(roleToSpawn);
 
     if (bodyCost(body) > spawn.room.energyAvailable) {
