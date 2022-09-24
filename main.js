@@ -19,14 +19,12 @@ module.exports.loop = function () {
 function getReservableControllers() {
     let roomNames = shuffle(Object.keys(Game.rooms));
     let controllers = [];
-    for (const r in roomNames) {
-        if (!(Game.rooms[r])) msg('getReservableControllers()', "Can't find room: " + r);
-        let controller = Game.rooms[r].controller;
-        if (!(controller)) continue;
-        if (controller.my) continue;
-        if (controller.reservation) continue;
-        controllers.push(controller);
-    }
+    roomNames.forEach(roomName => {
+        let controller = Game.rooms[roomName].controller;
+        if (controller && !(controller.my) && !(controller.reservation)) {
+            controllers.push(controller);
+        }
+    });
     return controllers;
 }
 
