@@ -1248,6 +1248,7 @@ function spawnHarvester(spawn) {
         Memory.reserversNeeded = getReservableControllers() >= 1;
         return false;
     }
+    msg('spawnHarvester()', 'Before workParts CPU: ' + Game.cpu.getUsed());
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
     let partsToAdd = [WORK, MOVE];
