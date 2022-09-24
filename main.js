@@ -653,6 +653,12 @@ function transfer(creep, destination) {
         }
         if (destination instanceof StructureSpawn || destination instanceof StructureExtension) {
             creep.room.memory.timeOfLastSpawnEnergyDelivery = Game.time;
+            //Spawns/extensions should be used FiFo.
+            //Structure filled first is probably easiest to fill and should therefore be spent first.
+            if (!(creep.room.memory.spawnStructureIdsFiFo)) creep.room.memory.spawnStructureIdsFiFo = [];
+            const index = creep.room.memory.spawnStructureIdsFiFo.indexOf(destination.id);
+            if (index > -1) creep.room.memory.spawnStructureIdsFiFo.splice(index, 1);
+            creep.room.memory.spawnStructureIdsFiFo.push(destination.id);
         } else if (destination instanceof Creep) {
             //the receiver should reconsider what to do after getting the energy
             resetDestination(destination);
