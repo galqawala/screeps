@@ -405,6 +405,9 @@ function getNewDestination(creep) {
     } else if (role === 'reserver') {
         let destination = closest(getReservableControllers());
         if (destination) task = { action: 'reserveController', destination: destination };
+    } else if (role === 'explorer') {
+        let destination = getExit(creep.pos);
+        if (destination) task = { action: 'moveTo', destination: destination };
     }
 
     if (task) {
@@ -580,7 +583,6 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'harvest') {
         actionOutcome = creep.harvest(destination);
         Memory.harvestersNeeded = true; //we need dedicated harvesters
-        msg(creep, 'we need harvesters: ' + Memory.harvestersNeeded);
     } else if (creep.memory.action === 'pickup') {
         actionOutcome = creep.pickup(destination);
         if (actionOutcome === OK) resetSpecificDestinationFromCreeps(destination);
@@ -1207,7 +1209,7 @@ function handleSpawn(spawn) {
 
     //spawn creeps
     if (!(spawn.spawning)) {
-        let roleToSpawn = null;
+        let roleToSpawn; let body;
 
         if (getCreepCountByRole('spawner') <= 0) {
             roleToSpawn = 'spawner';
@@ -1218,14 +1220,18 @@ function handleSpawn(spawn) {
         } else if (harvestersNeeded()) {
             spawnHarvester(spawn);
             return;
+        } else if (getCreepCountByRole('explorer') <= 0) {
+            roleToSpawn = 'explorer';
+            body = [MOVE];
+        } else {
+            roleToSpawn = 'worker';
         }
-        else roleToSpawn = 'worker';
 
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
             aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
-        if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable);
+        if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable, body);
     }
 }
 
@@ -1325,18 +1331,21 @@ function carriersNeeded() {
     return (getEnergySources(100).length / 2) > getCreepCountByRole('carrier');
 }
 
-function spawnCreep(spawn, roleToSpawn, energyAvailable) {
+function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
     /*  https://screeps.com/forum/topic/3044/how-does-each-bodypart-affect-fatigue/4
     Each body part except MOVE and empty CARRY generate fatigue.
     1 point per body part on roads, 2 on plain land, 10 on swamp.
     Each MOVE body part decreases fatigue points by 2 per tick.
     The creep cannot move when its fatigue is greater than zero.    */
-    let ratios;
-    if (roleToSpawn === 'worker') ratios = { move: 4, work: 3, carry: 1 };
-    else if (roleToSpawn === 'carrier' || roleToSpawn === 'spawner') ratios = { move: 1, carry: 1 };
-    else if (roleToSpawn === 'reserver') ratios = { move: 1, claim: 1 };
+    if (!body) {
+        let ratios;
 
-    let body = bodyByRatio(ratios, energyAvailable);
+        if (roleToSpawn === 'worker') ratios = { move: 4, work: 3, carry: 1 };
+        else if (roleToSpawn === 'carrier' || roleToSpawn === 'spawner') ratios = { move: 1, carry: 1 };
+        else if (roleToSpawn === 'reserver') ratios = { move: 1, claim: 1 };
+
+        body = bodyByRatio(ratios, energyAvailable);
+    }
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
 
