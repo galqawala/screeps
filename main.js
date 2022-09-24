@@ -116,10 +116,10 @@ function bodyByRatio(ratios, maxCost) {
         let partCost = BODYPART_COST[part];
         if (!partCost) {
             msg('bodyByRatio()', "Can't find cost for part: " + part);
-            return null;
+            return undefined;
         }
         cost += BODYPART_COST[part];
-        if (isNaN(cost)) return null;
+        if (isNaN(cost)) return undefined;
     }
 
     for (; ;) { //until break
@@ -142,7 +142,7 @@ function bodyByRatio(ratios, maxCost) {
 }
 
 function bodyPartToAddByRatio(ratios, partAmounts) {
-    let nextPart = null;
+    let nextPart = undefined;
     let minRatio = Number.POSITIVE_INFINITY;
 
     for (const part in ratios) {
@@ -363,7 +363,7 @@ function handleCreep(creep) {
     let destination = getDestinationFromMemory(creep);
 
     if (creep.memory.awaitingDeliveryFrom && !(Game.creeps[creep.memory.awaitingDeliveryFrom])) {
-        creep.memory.awaitingDeliveryFrom = null; //no longer await delivery from a dead creep
+        creep.memory.awaitingDeliveryFrom = undefined; //no longer await delivery from a dead creep
     }
 
     //create a new plan if situation requires
@@ -474,7 +474,7 @@ function getTaskForCarrier(creep) {
 }
 
 function closest(pos, options) {
-    if (options.length < 1) return null;
+    if (options.length < 1) return undefined;
     let destination = pos.findClosestByPath(options); //same room
     if (destination) return destination;
     destination = randomItem(options); //another room
@@ -482,7 +482,7 @@ function closest(pos, options) {
 }
 
 function closestTask(pos, tasks) {
-    let closest = null;
+    let closest = undefined;
     let minRange = Number.POSITIVE_INFINITY;
 
     tasks.forEach(task => {
@@ -999,7 +999,7 @@ function getExit(pos) {
     let findExit = Game.map.findExit(pos.roomName, destinationRoomName);
     if (findExit === ERR_NO_PATH) {
         msg(pos, 'no path between rooms: ' + pos.roomName + ' - ' + destinationRoomName);
-        return null;
+        return undefined;
     } else {
         return pos.findClosestByPath(findExit);
     }
@@ -1040,19 +1040,19 @@ function updateConstructionSiteScore(room, x, y, value) {
 
 function getPosForStorage(room) {
     //next to the link, controller and upgrade spots
-    if (!(room)) return null;
-    if (!(room.controller)) return null;
+    if (!(room)) return undefined;
+    if (!(room.controller)) return undefined;
 
     let link = room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } });
     if (!link) link = room.controller.pos.findClosestByRange(
         FIND_MY_CONSTRUCTION_SITES, { filter: { structureType: STRUCTURE_LINK } });
-    if (!link) return null;
-    if (link.pos.getRangeTo(room.controller.pos) > 6) return null;
+    if (!link) return undefined;
+    if (link.pos.getRangeTo(room.controller.pos) > 6) return undefined;
 
     let targetPos = link.pos;
     let range = 1; //next to the link
     let bestScore = -1;
-    let bestPos = null;
+    let bestPos = undefined;
     const terrain = new Room.Terrain(room.name);
 
     for (let x = targetPos.x - range; x <= targetPos.x + range; x++) {
@@ -1061,7 +1061,7 @@ function getPosForStorage(room) {
             if (terrain.get(x, y) === TERRAIN_MASK_WALL) continue;
             let pos = new RoomPosition(x, y, room.name);
             let score = countWorkSpotsAround(pos, 'upgrade');
-            if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
+            if (hasStructureInRange(pos, undefined, 1, true)) score -= 0.1;
             if (bestScore < score) {
                 bestScore = score;
                 bestPos = pos;
@@ -1086,7 +1086,7 @@ function getPrimaryPosForLink(room) {
         if (target && !hasStructureInRange(target.pos, STRUCTURE_LINK, 6, true)) {
             let targetPos = target.pos;
             let bestScore = -1;
-            let bestPos = null;
+            let bestPos = undefined;
 
             for (let x = targetPos.x - range; x <= targetPos.x + range; x++) {
                 for (let y = targetPos.y - range; y <= targetPos.y + range; y++) {
@@ -1095,7 +1095,7 @@ function getPrimaryPosForLink(room) {
                     let pos = new RoomPosition(x, y, room.name);
                     let task = (target instanceof StructureController ? 'upgrade' : 'harvest');
                     let score = countWorkSpotsAround(pos, task);
-                    if (hasStructureInRange(pos, null, 1, true)) score -= 0.1;
+                    if (hasStructureInRange(pos, undefined, 1, true)) score -= 0.1;
                     if (bestScore < score) {
                         bestScore = score;
                         bestPos = pos;
@@ -1237,7 +1237,7 @@ function getEnergy(object) {
 function getStore(object) {
     if (object instanceof Store) return object;
     if (object.store instanceof Store) return object.store;
-    return null;
+    return undefined;
 }
 
 function handleSpawn(spawn) {
@@ -1491,35 +1491,35 @@ function resetDestination(creep) {
     creep.memory.lastDestination = creep.memory.destination;
     creep.memory.lastAction = creep.memory.action;
     //reset properties
-    if (!(creep.memory.destination)) return null;
+    if (!(creep.memory.destination)) return undefined;
     let destination = Game.getObjectById(creep.memory.destination);
-    creep.memory.destination = null;
+    creep.memory.destination = undefined;
     creep.memory.destinationSetTime = Game.time;
-    creep.memory.timeApproachedDestination = null;
-    creep.memory.action = null;
+    creep.memory.timeApproachedDestination = undefined;
+    creep.memory.action = undefined;
     if (destination && destination.memory && destination.memory.awaitingDeliveryFrom) {
-        destination.memory.awaitingDeliveryFrom = null;
+        destination.memory.awaitingDeliveryFrom = undefined;
     }
 
-    return null;
+    return undefined;
 }
 
 function isEmpty(object) {
-    if (!object) return null;
+    if (!object) return undefined;
     let store = getStore(object);
-    if (!store) return null;
+    if (!store) return undefined;
     return store.getUsedCapacity(RESOURCE_ENERGY) <= 0;
 }
 function isFull(object) {
-    if (!object) return null;
+    if (!object) return undefined;
     let store = getStore(object);
-    if (!store) return null;
+    if (!store) return undefined;
     return store.getFreeCapacity(RESOURCE_ENERGY) <= 0;
 }
 function fillRatio(object) {
-    if (!object) return null;
+    if (!object) return undefined;
     let store = getStore(object);
-    if (!store) return null;
+    if (!store) return undefined;
     return store.getUsedCapacity(RESOURCE_ENERGY) / store.getCapacity(RESOURCE_ENERGY);
 }
 
