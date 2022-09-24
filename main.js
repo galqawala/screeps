@@ -381,6 +381,7 @@ function handleCreep(creep) {
             || (destination instanceof RoomPosition && creep.memory.rangeToDestination > 0)
         ) && (creep.memory.timeApproachedDestination) < (Game.time - 10)
         ) {
+            msg(creep, 'timeout! time: ' + Game.time + ' timeApproachedDestination: ' + creep.memory.timeApproachedDestination);
             creep.say('⌛️');
             resetDestination(creep);
             memorizeBlockedObject(creep, destination);
