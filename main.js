@@ -11,6 +11,7 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
+    if (!(Memory.username)) Memory.username = Game.spawns[Object.keys(Game.spawns)[0]].owner.username;
     for (const i in Game.creeps) handleHarvester(Game.creeps[i]) || handleCreep(Game.creeps[i]);
     for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
@@ -943,6 +944,8 @@ function shuffle(unshuffled) {
 function canHarvestInRoom(room) {
     if (!(room.controller)) return true; //no controller
     if (room.controller.my) return true; //my controller
+    let reservation = room.controller.reservation;
+    if (reservation && reservation.username === Memory.username) return true; //reserved to me
     if (!(room.controller.owner) && !(room.controller.reservation)) return true; //no owner & no reservation
     return false;
 }
@@ -961,7 +964,8 @@ function isRoomSafe(roomName, currentRoomName) {
 
 function getExit(pos) {
     /*
-[15:23:10][shard3]41913859 [room E6S42 pos 49,33]: accessibleRooms: */
+    [15:25:22][shard3]41913903 [room E6S42 pos 49,33]: accessibleRooms:  for exits 3,E7S42,5,E6S43,7,E5S42
+    */
     let exits = Game.map.describeExits(pos.roomName);
     let accessibleRooms = Object.values(exits).filter(roomName =>
         isRoomSafe(roomName, pos.roomName) && Memory.rooms[roomName].canHarvest);
