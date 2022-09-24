@@ -661,7 +661,7 @@ function transfer(creep, destination) {
         }
         if (destination instanceof StructureSpawn || destination instanceof StructureExtension) {
             creep.room.memory.timeOfLastSpawnEnergyDelivery = Game.time;
-            //First filled spawns/extensions should be used first, as they are probably easier to reach
+            //First filled spawns/extensions should be used first, as they are probably easier to refill
             if (!(creep.room.memory.sortedSpawnStructureIds)) creep.room.memory.sortedSpawnStructureIds = [];
             if (!(creep.room.memory.sortedSpawnStructureIds.includes(destination.id))) {
                 creep.room.memory.sortedSpawnStructureIds.push(destination.id);
@@ -948,7 +948,7 @@ function minTransferAmount(creep) {
 }
 
 function getSpawnsAndExtensionsSorted(room) {
-    //First filled spawns/extensions should be used first, as they are probably easier to reach
+    //First filled spawns/extensions should be used first, as they are probably easier to refill
     let all = room.find(FIND_MY_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN);
@@ -959,8 +959,8 @@ function getSpawnsAndExtensionsSorted(room) {
 }
 
 function tryResetSpawnsAndExtensionsSorting(room) {
-    //First filled spawns/extensions should be used first, as they are probably easier to reach
-    //If none are full we can forget the order and learn a new one
+    //First filled spawns/extensions should be used first, as they are probably easier to refill
+    //If none are full we can forget the old order and learn a new one
     if (room.find(FIND_MY_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION
