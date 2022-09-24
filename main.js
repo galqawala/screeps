@@ -1180,7 +1180,7 @@ function handleSpawn(spawn) {
         if (getCreepCountByRole('spawner') <= 0) roleToSpawn = 'spawner';
         else if (carriersNeeded()) roleToSpawn = 'carrier';
         else if (!getEnergySourceTask(1, spawn.pos, true, true, false)) {
-            spawnHarvester();
+            spawnHarvester(spawn);
         }
         else roleToSpawn = 'worker';
 
