@@ -520,23 +520,9 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
     let sources = [];
 
     for (const i in Game.rooms) {
-        let room = Game.rooms[i];
-        sources = sources
-            .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
-            .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
-            .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
-            .concat(room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_CONTAINER
-                        || (structure.structureType === STRUCTURE_STORAGE && allowStorage)
-                        || (structure.structureType === STRUCTURE_LINK && allowAnyLink)
-                        || isDownstreamLink(structure)
-                    ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
-                }
-            }));
-        if (allowSource && canHarvestInRoom(room)) {
-            sources = sources.concat(getAvailableHarvestSpots(room));
-        }
+        sources = sources.concat(
+            getEnergySourcesInRoom(Game.rooms[i], myMinTransfer, pos, allowStorage, allowAnyLink, allowSource)
+        );
     }
 
     let destination = closest(pos, sources);
@@ -552,6 +538,31 @@ function getEnergySourceTask(myMinTransfer, pos, allowStorage = true, allowAnyLi
     }
 
     return { action: action, destination: destination };
+}
+
+function getEnergySourcesInRoom(room, myMinTransfer, pos, allowStorage = true, allowAnyLink = true, allowSource = true) {
+    let sources = []
+        .concat(room.find(FIND_DROPPED_RESOURCES, { filter: (resource) => { return getEnergy(resource) >= myMinTransfer; } }))
+        .concat(room.find(FIND_TOMBSTONES, { filter: (tomb) => { return getEnergy(tomb) >= myMinTransfer; } }))
+        .concat(room.find(FIND_RUINS, { filter: (ruin) => { return getEnergy(ruin) >= myMinTransfer; } }))
+        .concat(room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType === STRUCTURE_CONTAINER
+                    || (structure.structureType === STRUCTURE_STORAGE && allowStorage)
+                    || (structure.structureType === STRUCTURE_LINK && allowAnyLink)
+                    || isDownstreamLink(structure)
+                ) && structure.store.getUsedCapacity(RESOURCE_ENERGY) >= myMinTransfer;
+            }
+        }));
+    if (allowSource && canHarvestInRoom(room)) {
+        let activeSources = pos.findInRange(FIND_SOURCES_ACTIVE, 1);
+        if (activeSources.length) {
+            sources = sources.concat(activeSources);
+        } else {
+            sources = sources.concat(getAvailableHarvestSpots(room));
+        }
+    }
+    return sources;
 }
 
 function action(creep, destination) {
