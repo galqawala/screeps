@@ -18,10 +18,56 @@ var MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCa
 //  To disable "File is a CommonJS module; it may be converted to an ES module. ts(80001)"
 //  disable setting: JavaScript › Validate: Enable > Enable/disable JavaScript validation.
 module.exports.loop = function () {
-    for (const i in Game.creeps) handleCreep(Game.creeps[i]);
+    for (const i in Game.creeps) handleHarvester(Game.creeps[i]) || handleCreep(Game.creeps[i]);
     for (const i in Game.spawns) handleSpawn(Game.spawns[i]);
     for (const i in Game.rooms) handleRoom(Game.rooms[i]);
 };
+
+function handleHarvester(creep) {
+    if (creep.memory.role !== 'harvester') return false;
+    if (creep.spawning) return true;
+    //move
+    let pathColor = hashColor(creep.memory.role);
+    creep.moveTo(creep.memory.targetPos, { visualizePathStyle: { stroke: pathColor } });
+    if (!isEmpty(creep)) {
+        //repair
+        let repairFilter = { filter: (target) => { return target.my !== false && target.hits < target.hitsMax; } };
+        let target = creep.pos.findClosestByPath(creep.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3, repairFilter));
+        if (target) creep.repair(target);
+        //build
+        target = creep.pos.findClosestByPath(creep.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3));
+        //upgrade controller
+        if (creep.room.controller) creep.upgradeController(creep.room.controller);
+        //transfer
+        if (isFull(creep)) unloadCreep(creep);
+    }
+    //harvest
+    creep.harvest(Game.getObjectById(creep.memory.sourceId));
+    //done
+    return true;
+}
+
+function unloadCreep(creep) {
+    let pos = creep.pos;
+    let destination = pos.findClosestByPath( //link
+        pos.findInRange(FIND_STRUCTURES, 1, {
+            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === STRUCTURE_LINK; }
+        })
+    );
+    if (destination) { creep.transfer(destination, RESOURCE_ENERGY); return; }
+    destination = pos.findClosestByPath( //carrier
+        pos.findInRange(FIND_CREEPS, 1, {
+            filter: (target) => { return !isFull(target) && target.my !== false && target.memory.role === 'carrier'; }
+        })
+    );
+    if (destination) { creep.transfer(destination, RESOURCE_ENERGY); return; }
+    destination = pos.findClosestByPath( //any structure
+        pos.findInRange(FIND_STRUCTURES, 1, {
+            filter: (target) => { return !isFull(target) && target.my !== false; }
+        })
+    );
+    if (destination) { creep.transfer(destination, RESOURCE_ENERGY); return; }
+}
 
 function bodyByRatio(ratios, maxCost) {
     let partAmounts = {};
@@ -519,6 +565,8 @@ function action(creep, destination) {
     } else if (creep.memory.action === 'moveTo') {
         let pathColor = hashColor(creep.memory.role);
         actionOutcome = creep.moveTo(destination, { visualizePathStyle: { stroke: pathColor } });
+    } else if (creep.memory.action === 'build') {
+        actionOutcome = creep.build(destination);
     } else if (creep.memory.action) {
         msg(creep, "action() can't handle action: " + creep.memory.action, true);
     } else if (destination) {
