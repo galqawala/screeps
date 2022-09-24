@@ -88,8 +88,8 @@ function handleHarvester(creep) {
 function unloadCreep(creep) {
     let pos = creep.pos;
     let destination = pos.findClosestByPath( //link
-        pos.findInRange(FIND_STRUCTURES, 1, {
-            filter: (target) => { return !isFull(target) && target.my !== false && target.structureType === STRUCTURE_LINK; }
+        pos.findInRange(FIND_MY_STRUCTURES, 1, {
+            filter: (target) => { return !isFull(target) && target.structureType === STRUCTURE_LINK; }
         })
     );
     if (destination) { creep.transfer(destination, RESOURCE_ENERGY); return; }
@@ -187,6 +187,14 @@ function handleRoom(room) {
             room.memory[property] = value;
         }
     }
+
+    //energy spent
+    let energy = room.energyAvailable;
+    if (room.memory.energyAvailable > energy) {
+        msg(room, 'energy: ' + room.memory.energyAvailable + ' ➤ ' + energy);
+        tryResetSpawnsAndExtensionsSorting(room);
+    }
+    room.memory.energyAvailable = energy;
 }
 
 function handleHostilesInRoom(room) {
@@ -653,12 +661,11 @@ function transfer(creep, destination) {
         }
         if (destination instanceof StructureSpawn || destination instanceof StructureExtension) {
             creep.room.memory.timeOfLastSpawnEnergyDelivery = Game.time;
-            //Spawns/extensions should be used FiFo.
-            //Structure filled first is probably easiest to fill and should therefore be spent first.
-            if (!(creep.room.memory.spawnStructureIdsFiFo)) creep.room.memory.spawnStructureIdsFiFo = [];
-            const index = creep.room.memory.spawnStructureIdsFiFo.indexOf(destination.id);
-            if (index > -1) creep.room.memory.spawnStructureIdsFiFo.splice(index, 1);
-            creep.room.memory.spawnStructureIdsFiFo.push(destination.id);
+            //First filled spawns/extensions should be used first, as they are probably easier to reach
+            if (!(creep.room.memory.sortedSpawnStructureIds)) creep.room.memory.sortedSpawnStructureIds = [];
+            if (!(creep.room.memory.sortedSpawnStructureIds.includes(destination.id))) {
+                creep.room.memory.sortedSpawnStructureIds.push(destination.id);
+            }
         } else if (destination instanceof Creep) {
             //the receiver should reconsider what to do after getting the energy
             resetDestination(destination);
@@ -940,12 +947,27 @@ function minTransferAmount(creep) {
     return creep.store.getCapacity(RESOURCE_ENERGY) / 10;
 }
 
-function getSpawnsAndExtensionsFiFo(room) {
-    return room.memory.spawnStructureIdsFiFo.map(id => Game.getObjectById(id));
+function getSpawnsAndExtensionsSorted(room) {
+    //First filled spawns/extensions should be used first, as they are probably easier to reach
+    return room.memory.sortedSpawnStructureIds.map(id => Game.getObjectById(id));
+}
+
+function tryResetSpawnsAndExtensionsSorting(room) {
+    //First filled spawns/extensions should be used first, as they are probably easier to reach
+    //If none are full we can forget the order and learn a new one
+    if (room.find(FIND_MY_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType === STRUCTURE_EXTENSION
+                || structure.structureType === STRUCTURE_SPAWN
+            ) && isFull(structure);
+        }
+    }).length <= 0) {
+        room.memory.sortedSpawnStructureIds = [];
+    }
 }
 
 function getEnergyStructures(room) {
-    return room.find(FIND_STRUCTURES, {
+    return room.find(FIND_MY_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION
                 || structure.structureType === STRUCTURE_SPAWN
@@ -959,7 +981,7 @@ function getGlobalEnergyStructures() {
     for (const i in Game.rooms) {
         let room = Game.rooms[i];
         structures = structures.concat(
-            room.find(FIND_STRUCTURES, {
+            room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType === STRUCTURE_EXTENSION
                         || structure.structureType === STRUCTURE_SPAWN
@@ -1277,7 +1299,9 @@ function handleSpawn(spawn) {
             aggregated + (item.memory.role === roleToSpawn ? creepCost(item) : 0), 0 /*initial*/) || 0;
         let budget = Math.min(costOfCurrentCreepsInTheRole / 3, room.energyCapacityAvailable);
 
-        if (room.energyAvailable >= budget) spawnCreep(spawn, roleToSpawn, room.energyAvailable, body);
+        if (room.energyAvailable >= budget) {
+            spawnCreep(spawn, roleToSpawn, room.energyAvailable, body);
+        }
     }
 }
 
@@ -1321,7 +1345,7 @@ function spawnHarvester(spawn) {
     }
     let cost = bodyCost(body);
     if (cost > spawn.room.energyAvailable) return false;
-    let energyStructures = getSpawnsAndExtensionsFiFo(spawn.room);
+    let energyStructures = getSpawnsAndExtensionsSorted(spawn.room);
     let name = nameForCreep(roleToSpawn);
     let harvestPos = getHarvestSpotForSource(source);
     constructContainerIfNeeded(harvestPos);
@@ -1409,7 +1433,7 @@ function spawnCreep(spawn, roleToSpawn, energyAvailable, body) {
 
         body = bodyByRatio(ratios, energyAvailable);
     }
-    let energyStructures = getSpawnsAndExtensionsFiFo(spawn.room);
+    let energyStructures = getSpawnsAndExtensionsSorted(spawn.room);
     let name = nameForCreep(roleToSpawn);
 
     if (bodyCost(body) > spawn.room.energyAvailable) {
