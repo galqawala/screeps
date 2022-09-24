@@ -1243,6 +1243,10 @@ function spawnHarvester(spawn) {
         sources = sources.concat(Game.rooms[r].find(FIND_SOURCES, sourceFilter));
     }
     let source = closest(spawn.pos, sources);
+    if (!source) {
+        Memory.harvestersNeeded = false;
+        return false;
+    }
     let workParts = source.energyCapacity / ENERGY_REGEN_TIME / HARVEST_POWER;
     let body = [CARRY, MOVE];
     for (let x = 1; x <= workParts; x++) {
@@ -1257,6 +1261,7 @@ function spawnHarvester(spawn) {
         msg(spawn, 'Spawning: ' + roleToSpawn + ' (' + name + '), cost: '
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
+    return true;
 }
 
 function getHarvestSpotForSource(source) {
