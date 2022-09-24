@@ -1326,9 +1326,7 @@ function spawnHarvester(spawn) {
     let energyStructures = getEnergyStructures(spawn.room, false, true);
     let name = nameForCreep(roleToSpawn);
     let harvestPos = getHarvestSpotForSource(source);
-    if (harvestPos.lookFor(LOOK_STRUCTURES).length + harvestPos.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0) {
-        harvestPos.createConstructionSite(STRUCTURE_CONTAINER);
-    }
+    constructContainerIfNeeded(harvestPos);
     let memory = { role: roleToSpawn, sourceId: source.id, targetPos: harvestPos };
     if (spawn.spawnCreep(body, name, { memory: memory, energyStructures: energyStructures }) === OK) {
         Memory.harvestersNeeded = false;
@@ -1336,6 +1334,13 @@ function spawnHarvester(spawn) {
             + bodyCost(body) + '/' + spawn.room.energyAvailable + '/' + spawn.room.energyCapacityAvailable);
     }
     return true;
+}
+
+function constructContainerIfNeeded(harvestPos) {
+    if (harvestPos.lookFor(LOOK_STRUCTURES).length + harvestPos.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
+        && !hasStructureInRange(harvestPos, STRUCTURE_LINK, 1, true)) {
+        harvestPos.createConstructionSite(STRUCTURE_CONTAINER);
+    }
 }
 
 function getHarvestSpotForSource(source) {
