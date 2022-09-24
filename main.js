@@ -949,7 +949,8 @@ function minTransferAmount(creep) {
 
 function getSpawnsAndExtensionsSorted(room) {
     //First filled spawns/extensions should be used first, as they are probably easier to reach
-    return room.memory.sortedSpawnStructureIds.map(id => Game.getObjectById(id));
+    return room.memory.sortedSpawnStructureIds.map(id => Game.getObjectById(id))
+        .concat(shuffle(getEnergyStructures(room))).filter(onlyUnique);
 }
 
 function tryResetSpawnsAndExtensionsSorting(room) {
