@@ -1518,9 +1518,11 @@ function countStructures(room, structureType, includeConstructionSites) {
     return count;
 }
 
-function getCreepCountByRole(role, inactiveOnly = false) {
+function getCreepCountByRole(role, inactiveOnly = false, minTicksToLive = 50) {
     return Object.values(Game.creeps).filter(function (creep) {
-        return creep.memory.role === role && (!inactiveOnly || creep.memory.lastActionOutcome !== OK);
+        return creep.memory.role === role
+            && (!inactiveOnly || creep.memory.lastActionOutcome !== OK)
+            && creep.ticksToLive >= minTicksToLive;
     }).length;
 }
 
