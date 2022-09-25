@@ -1296,8 +1296,10 @@ function handleSpawn(spawn) {
         } else if (getCreepCountByRole('explorer') <= 0) {
             roleToSpawn = 'explorer';
             body = [MOVE];
-        } else {
+        } else if (room.energyAvailable >= room.energyCapacityAvailable) {
             roleToSpawn = 'worker';
+        } else {
+            return;
         }
 
         let costOfCurrentCreepsInTheRole = Object.values(Game.creeps).reduce((aggregated, item) =>
